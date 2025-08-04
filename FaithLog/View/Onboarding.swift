@@ -13,20 +13,39 @@ struct Onboarding: View {
             ZStack{
                 Color(Color.customBackground)
                     .ignoresSafeArea()
-                NavigationLink{
-                    QtView()
-                }label:{
-                    VStack{
-                        Image("logo")
-                            .resizable()
-                            .frame(width:100,height:100)
-                            .padding(.bottom,20)
-                        Text("GET START")
-                            .font(Font.black30)
-                            .foregroundColor(Color.colorText)
-                    }
+                
+                VStack {
+                    Image("logo")
+                        .resizable()
+                        .frame(width:100,height:100)
+//                        .padding(.bottom,20)
+                    Spacer()
                     
-                }
+                    HStack{
+                        NavigationLink{
+                            QtView()
+                        }label:{
+                            
+                            NavigationBtn(title:"QT")
+                            
+                        }//:NavigationLink(QT)
+                        
+                        NavigationLink{
+                            BibleView()
+                        }label:{
+                            NavigationBtn(title: "BIBLE")
+                        }//:NavigationBTN(THANKS)
+                        
+
+                    }//:HSTACK(QT,THABKS)
+                    Spacer()
+
+                }//:VSTACK
+                
+
+               
+                
+
                
                 
             }
