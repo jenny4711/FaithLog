@@ -9,10 +9,13 @@ import SwiftUI
 import SwiftData
 @main
 struct FaithLogApp: App {
+    @State private var dataService = DataService()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .modelContainer(for:[Qt.self])
+                .environment(dataService)
         }
     }
 }

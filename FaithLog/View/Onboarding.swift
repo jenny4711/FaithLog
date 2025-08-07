@@ -8,25 +8,46 @@
 import SwiftUI
 
 struct Onboarding: View {
+    @State private var showBibleForm:Bool = false
     var body: some View {
         NavigationStack {
             ZStack{
                 Color(Color.customBackground)
                     .ignoresSafeArea()
-                NavigationLink{
-                    QtView()
-                }label:{
-                    VStack{
-                        Image("logo")
-                            .resizable()
-                            .frame(width:100,height:100)
-                            .padding(.bottom,20)
-                        Text("GET START")
-                            .font(Font.black30)
-                            .foregroundColor(Color.colorText)
-                    }
+                
+                VStack{
+                    Image("logo")
+                        .resizable()
+                        .frame(width:100,height:100)
+                        .padding(.bottom,20)
+                    HStack{
+                        NavigationLink{
+                            QtView()
+                        }label:{
+                           SectionBtns(title: "QT")
+                            
+                        }//: NavigationLink(QTBTN)
+                        
+                        Button(action: {
+                            showBibleForm = true
+                        }) {
+                            SectionBtns(title: "Bible")
+                        }//:BTN(BIBLE)
+                        
+
+                        
+                    }//:HSTACK(qt,bible)
+                    
+
                     
                 }
+                .sheet(isPresented: $showBibleForm) {
+                    BibleFormView()
+                        .presentationDetents([.fraction(0.3)])
+                    
+                }
+                
+              
                
                 
             }
