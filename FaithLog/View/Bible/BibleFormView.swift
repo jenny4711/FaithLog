@@ -10,9 +10,10 @@ import SwiftUI
 struct BibleFormView: View {
     @State var openResult: Bool = false
     @Environment(DataService.self) var api
+    @Environment(\.dismiss) var dismiss
     @State var selectedBible: Bible?
     @State var chapter: Int = 1
-
+   
     
     var body: some View {
         VStack{
@@ -24,6 +25,7 @@ struct BibleFormView: View {
                         await api.getBibleResult(selectedBible?.initial ?? "", selectedBible?.title ?? "", chapter: String(chapter))
                         openResult = true
                     }
+                              
                 }) {
                     Text("DONE")
                         .font(Font.semi20)
@@ -39,14 +41,16 @@ struct BibleFormView: View {
                             a in
                             Text(a.title).tag(a)
                                 .font(Font.semi20)
+                                .foregroundColor(Color.customBackground)
                         }
                     }
                 }//:PICKER(title)
                 .pickerStyle(.wheel)
                 .accentColor(Color.customBackground)
-                .colorScheme(.dark) // 다크 모드로 강제 설정
+                .colorScheme(.light) // 라이트 모드로 강제 설정하여 색상이 잘 보이도록
                 
                 Divider()
+                    .background(Color.customBackground)
                 
                 // MARK: - PICKER(CHAPTER)
                 Picker("장",selection:$chapter){
@@ -54,11 +58,12 @@ struct BibleFormView: View {
                         ch in
                         Text("\(ch) 장").tag(ch)
                             .font(Font.semi20)
+                            .foregroundColor(Color.customBackground)
                     }
                 }//:PICKER(CHAPTER)
                 .pickerStyle(.wheel)
                 .accentColor(Color.customBackground)
-                .colorScheme(.dark) // 다크 모드로 강제 설정
+                .colorScheme(.light) // 라이트 모드로 강제 설정하여 색상이 잘 보이도록
                 
                 Spacer()
             }//:HSTACK
@@ -71,10 +76,13 @@ struct BibleFormView: View {
         .background(Color.customText)
         .font(Font.semi20)
         .foregroundColor(Color.customBackground)
+        .preferredColorScheme(.light) // 전체 뷰를 라이트 모드로 설정
     }
 }
 
 
-//#Preview {
-//    BibleFormView( api: DataService())
-//}
+#Preview {
+    let dataService = DataService()
+    return BibleFormView()
+        .environment(dataService)
+}

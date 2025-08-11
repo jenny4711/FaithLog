@@ -15,11 +15,10 @@ class Qt{
     var medit:String = ""
     var pray:String = ""
     var address:String = ""
-    var content:String? = ""
+    var date:Date = Date()
+    @Relationship(deleteRule: .cascade) var content: [BibleBK] = []
     
     init(){
         id = UUID().uuidString
     }
-    
-    
 }

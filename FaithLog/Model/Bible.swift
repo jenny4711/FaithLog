@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 struct Bible:Codable,Identifiable,Hashable{
     var id = UUID()   // ForEach가 고유값으로 사용
@@ -26,24 +27,50 @@ struct Bible:Codable,Identifiable,Hashable{
 struct BibleResponse: Decodable {
     let message: String
     let result: [BibleBK]   // ✅ 여기에 진짜 데이터 배열이 들어 있음
-    
-    
-    
-    
 }
 
-struct BibleBK: Decodable, Identifiable {
-    var id = UUID()
-    let title: String
-    let lang: String
-    let chapter: String
-    let verse: String
-    let content: String
-    // _id와 __v 필드는 JSON에 있지만 모델에서는 무시
+@Model
+class BibleBK: Identifiable, Decodable {
+    @Attribute(.unique) var id: String
+    var title: String
+    var lang: String
+    var chapter: String
+    var verse: String
+    var content: String
+    
+    init(title: String, lang: String, chapter: String, verse: String, content: String) {
+        self.id = UUID().uuidString
+        self.title = title
+        self.lang = lang
+        self.chapter = chapter
+        self.verse = verse
+        self.content = content
+    }
     
     private enum CodingKeys: String, CodingKey {
         case title, lang, chapter, verse, content
-        // id, _id, __v는 제외
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id = UUID().uuidString
+        self.title = try container.decode(String.self, forKey: .title)
+        self.lang = try container.decode(String.self, forKey: .lang)
+        self.content = try container.decode(String.self, forKey: .content)
+        
+        // chapter와 verse는 숫자나 문자열로 올 수 있으므로 안전하게 처리
+        if let chapterInt = try? container.decode(Int.self, forKey: .chapter) {
+            self.chapter = String(chapterInt)
+        } else {
+            self.chapter = try container.decode(String.self, forKey: .chapter)
+        }
+        
+        if let verseInt = try? container.decode(Int.self, forKey: .verse) {
+            self.verse = String(verseInt)
+        } else {
+            self.verse = try container.decode(String.self, forKey: .verse)
+        }
     }
 }
 

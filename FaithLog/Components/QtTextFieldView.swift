@@ -1,0 +1,60 @@
+//
+//  QtTextFieldView.swift
+//  FaithLog
+//
+//  Created by Ji y LEE on 8/8/25.
+//
+
+import SwiftUI
+
+struct QtTextFieldView: View {
+    @Binding var item:String
+   var title:String = "" 
+    var body: some View {
+        VStack{
+            HStack {
+                Text(title)
+                    .font(Font.bold15)
+                    .foregroundColor(Color.colorText)
+                Spacer()
+            }
+            
+            VStack(alignment:.leading, spacing: 8) {
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                    
+                    TextEditor(text: $item)
+                        .frame(minHeight: 120, maxHeight: 150)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .scrollContentBackground(.hidden) // 다크모드 배경 숨기기
+                        .font(Font.reg12)
+                        .accentColor(Color.colorText)
+                        .tint(Color.colorText)
+                        .colorScheme(.light) // 강제로 라이트모드 적용
+                       
+                    
+                    if item.isEmpty {
+                        Text("묵상 내용을 입력하세요...")
+                            .foregroundColor(Color.gray.opacity(0.6))
+                            .font(Font.reg12)
+                            .padding(.top, 16)
+                            .padding(.leading, 16)
+                            .allowsHitTesting(false)
+                    }
+                }
+            }
+            .foregroundColor(Color.colorText)
+        }
+    }
+}
+
+#Preview {
+    @Previewable @State var meditation: String = ""
+    return QtTextFieldView(item: $meditation, title: "묵상")
+}

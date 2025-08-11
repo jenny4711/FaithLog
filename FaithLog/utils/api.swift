@@ -6,13 +6,40 @@
 //
 
 import Foundation
+import SwiftData
+
 @Observable
 class DataService {
     var bible: [BibleBK] = []
+    var selectedBible:[BibleBK] = []
+    var selected:Bool = false
     var errorMsg: String?
     private let bibleURL = "https://bibleapi-fr2x.onrender.com/nb"
     
     
+    func toggleBibleVerse(_ verse: String) {
+           let selected = bible.filter { $0.verse == verse }
+           for item in selected {
+               if let index = selectedBible.firstIndex(where: { $0.id == item.id }) {
+                   // 이미 있으면 제거
+                   selectedBible.remove(at: index)
+                   self.selected = false
+               } else {
+                   // 없으면 추가
+                   selectedBible.append(item)
+                   self.selected = true
+               }
+           }
+       }
+    
+    func saveBibleVerse(_ verse: String) {
+        let selected = bible.filter { $0.verse == verse }
+        for item in selected {
+            if !selectedBible.contains(where: { $0.id == item.id }) {
+                selectedBible.append(item)
+            }
+        }
+    }
     
     
     func getBibleResult(_ initial:String,_ title:String,chapter:String) async  {
@@ -49,7 +76,14 @@ class DataService {
             if let bibleList = parseJSON(data) {
                 print("bibleList:--------\(bibleList)")
                 await MainActor.run {
-                    self.bible = bibleList
+                    print("🔢 Before sorting: \(bibleList.map { $0.verse })")
+                    var shortredBible = bibleList.sorted{ first, second in
+                        let firstVerse = Int(first.verse) ?? 0
+                        let secondVerse = Int(second.verse) ?? 0
+                        return firstVerse < secondVerse
+                    }
+                    print("🔢 After sorting: \(shortredBible.map { $0.verse })")
+                    self.bible = shortredBible
                 }
             }
         } catch {
@@ -72,10 +106,8 @@ class DataService {
             let decoded = try decoder.decode(BibleResponse.self, from: data)
             print("✅ Successfully decoded: \(decoded.result.count) verses")
             return decoded.result
-        } catch let DecodingError.typeMismatch(type, context) {
-            print("❌ Type mismatch: expected \(type) at \(context.codingPath)")
-            print("❌ Context: \(context.debugDescription)")
-            print("❌ Full error: ")
+        } catch let DecodingError.keyNotFound(key, context) {
+            print("❌ Key not found: \(key) at \(context.codingPath)")
             return nil
         } catch {
             print("❌ JSON decode error: \(error)")

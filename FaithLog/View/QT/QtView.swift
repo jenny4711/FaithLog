@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
-
+import SwiftData
 struct QtView: View {
     @State var openForm:Bool = false
+    @Environment(\.modelContext) private var context
+    @Query(sort:\Qt.date,order:.reverse) private var Qts:[Qt]
+    
     var body: some View {
         NavigationStack {
             ZStack{
@@ -28,18 +31,21 @@ struct QtView: View {
                     }//:VSTACK(logo and title)
                     .padding(.vertical,20)
                     .foregroundColor(Color.colorText)
-                    ScrollView{
-                        ForEach(0..<5){ item in
-                            NavigationLink{
-                                QtDetail()
-                            }label:{
-                                QtListCellView()
-                            }
-                           
-                        }
-                        
-                        
-                    }
+                 List {
+                      ForEach(Qts) { item in
+                          NavigationLink {
+                              QtDetail()
+                          } label: {
+                              QtListCellView(item: item)
+                          }
+                          .listRowBackground(Color.customBackground) // 각 셀 배경색
+                      }
+                  }
+                  .listStyle(PlainListStyle())
+                  .background(Color.customBackground) // 전체 List 배경색
+
+                 
+                   
                     .padding(.horizontal,24)
                     HStack{
                         Spacer()
@@ -47,12 +53,13 @@ struct QtView: View {
                     }
                     .padding(.trailing,24)
                 }//:VSTACK(LIST)
-                
+                .background(Color.customBackground)
                 
             }//:ZSTACK
             .sheet(isPresented: $openForm) {
                 QtFormView()
             }
+            
 
         }//:NAVIGATIONSTACK
         
@@ -62,16 +69,22 @@ struct QtView: View {
 }
 
 
+
+
+
+
+
+
  // MARK: - ListCell
 
 struct QtListCellView: View {
-    
+    var item:Qt?
     var body: some View {
         VStack{
-            Text("창조 이전부터 존재하신 하나님아들")
+            Text(item?.title ?? "")
                 .font(Font.bold15)
                
-            Text("요한복음 8:48-59")
+            Text(item?.address ?? "")
                 .font(Font.reg12)
         }
         .frame(maxWidth:.infinity)
