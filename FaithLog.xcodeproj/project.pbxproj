@@ -6,13 +6,33 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		15383E43107C915680667D05 /* Pods_FaithLog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFC9180791DB808CEAF28F /* Pods_FaithLog.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		04B06E9048754E592D648C33 /* Pods-FaithLog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaithLog.release.xcconfig"; path = "Target Support Files/Pods-FaithLog/Pods-FaithLog.release.xcconfig"; sourceTree = "<group>"; };
+		0C450E4702E1A922600CC9A8 /* Pods-FaithLog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaithLog.debug.xcconfig"; path = "Target Support Files/Pods-FaithLog/Pods-FaithLog.debug.xcconfig"; sourceTree = "<group>"; };
+		10FFC9180791DB808CEAF28F /* Pods_FaithLog.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FaithLog.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5DF0CDE2E39E19300A83DE8 /* FaithLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaithLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A5CDB31B2E4D998200A3CA81 /* Exceptions for "FaithLog" folder in "FaithLog" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A5DF0CDD2E39E19300A83DE8 /* FaithLog */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A5DF0CE02E39E19300A83DE8 /* FaithLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A5CDB31B2E4D998200A3CA81 /* Exceptions for "FaithLog" folder in "FaithLog" target */,
+			);
 			path = FaithLog;
 			sourceTree = "<group>";
 		};
@@ -23,17 +43,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15383E43107C915680667D05 /* Pods_FaithLog.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		486D5CF406E5F0E57377823F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				10FFC9180791DB808CEAF28F /* Pods_FaithLog.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A5DF0CD52E39E19300A83DE8 = {
 			isa = PBXGroup;
 			children = (
 				A5DF0CE02E39E19300A83DE8 /* FaithLog */,
 				A5DF0CDF2E39E19300A83DE8 /* Products */,
+				B4D54D6F5E2C6F00D371E0AC /* Pods */,
+				486D5CF406E5F0E57377823F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -45,6 +76,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B4D54D6F5E2C6F00D371E0AC /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0C450E4702E1A922600CC9A8 /* Pods-FaithLog.debug.xcconfig */,
+				04B06E9048754E592D648C33 /* Pods-FaithLog.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -52,9 +92,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A5DF0CE92E39E19500A83DE8 /* Build configuration list for PBXNativeTarget "FaithLog" */;
 			buildPhases = (
+				BB88AD428E9A15802664E10B /* [CP] Check Pods Manifest.lock */,
 				A5DF0CDA2E39E19300A83DE8 /* Sources */,
 				A5DF0CDB2E39E19300A83DE8 /* Frameworks */,
 				A5DF0CDC2E39E19300A83DE8 /* Resources */,
+				DA790C877EDDBA7EF06282E6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -64,8 +106,6 @@
 				A5DF0CE02E39E19300A83DE8 /* FaithLog */,
 			);
 			name = FaithLog;
-			packageProductDependencies = (
-			);
 			productName = FaithLog;
 			productReference = A5DF0CDE2E39E19300A83DE8 /* FaithLog.app */;
 			productType = "com.apple.product-type.application";
@@ -113,6 +153,52 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BB88AD428E9A15802664E10B /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FaithLog-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DA790C877EDDBA7EF06282E6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FaithLog/Pods-FaithLog-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FaithLog/Pods-FaithLog-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FaithLog/Pods-FaithLog-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A5DF0CDA2E39E19300A83DE8 /* Sources */ = {
@@ -163,7 +249,7 @@
 				DEVELOPMENT_TEAM = PC2DQ73FYH;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -227,7 +313,7 @@
 				DEVELOPMENT_TEAM = PC2DQ73FYH;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -248,6 +334,7 @@
 		};
 		A5DF0CEA2E39E19500A83DE8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0C450E4702E1A922600CC9A8 /* Pods-FaithLog.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -255,10 +342,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PC2DQ73FYH;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FaithLog/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -276,6 +364,7 @@
 		};
 		A5DF0CEB2E39E19500A83DE8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 04B06E9048754E592D648C33 /* Pods-FaithLog.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -283,10 +372,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PC2DQ73FYH;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FaithLog/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

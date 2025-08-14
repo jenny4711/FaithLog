@@ -34,9 +34,19 @@ struct Onboarding: View {
                             SectionBtns(title: "Bible")
                         }//:BTN(BIBLE)
                         
+                        
 
                         
                     }//:HSTACK(qt,bible)
+                    
+                    HStack{
+                        NavigationLink{
+                            SundayFormView()
+                        }label:{
+                           SectionBtns(title: "SunDay")
+                            
+                        }//: NavigationLink(Sunday)
+                    }
                     
 
                     

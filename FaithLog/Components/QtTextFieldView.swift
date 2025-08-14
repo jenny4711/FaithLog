@@ -22,21 +22,24 @@ struct QtTextFieldView: View {
             VStack(alignment:.leading, spacing: 8) {
                 ZStack(alignment: .topLeading) {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.white)
+                        .frame(height:500)
+                        
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                         )
                     
                     TextEditor(text: $item)
-                        .frame(minHeight: 120, maxHeight: 150)
+                        .frame(minHeight:150, maxHeight: 500)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
+                        
                         .scrollContentBackground(.hidden) // 다크모드 배경 숨기기
-                        .font(Font.reg12)
-                        .accentColor(Color.colorText)
-                        .tint(Color.colorText)
-                        .colorScheme(.light) // 강제로 라이트모드 적용
+                        .font(Font.reg18)
+                        .accentColor(Color.customText)
+                        .foregroundColor(Color.customBackground)
+//                        .tint(Color.colorText)
+                       /* .colorScheme(.light)*/ // 강제로 라이트모드 적용
                        
                     
                     if item.isEmpty {

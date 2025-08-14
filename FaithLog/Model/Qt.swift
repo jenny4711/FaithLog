@@ -15,6 +15,7 @@ class Qt{
     var medit:String = ""
     var pray:String = ""
     var address:String = ""
+    var bible:String = ""
     var date:Date = Date()
     @Relationship(deleteRule: .cascade) var content: [BibleBK] = []
     

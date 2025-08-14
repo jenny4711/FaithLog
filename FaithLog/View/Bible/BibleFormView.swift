@@ -12,9 +12,10 @@ struct BibleFormView: View {
     @Environment(DataService.self) var api
     @Environment(\.dismiss) var dismiss
     @State var selectedBible: Bible?
+    @State var aiResult:String = ""
     @State var chapter: Int = 1
-   
-    
+   @StateObject private  var askAI = AskAI()
+  
     var body: some View {
         VStack{
             // MARK: - DONE BUTTON
@@ -23,7 +24,11 @@ struct BibleFormView: View {
                                 Button(action: {
                     Task{
                         await api.getBibleResult(selectedBible?.initial ?? "", selectedBible?.title ?? "", chapter: String(chapter))
+                        
+                      
+                   
                         openResult = true
+                        
                     }
                               
                 }) {
@@ -71,7 +76,10 @@ struct BibleFormView: View {
         }//:VSTACK
         .sheet(isPresented: $openResult) {
             BibleResultView()
+          
+         
         }
+        
         .padding(.horizontal,16)
         .background(Color.customText)
         .font(Font.semi20)
@@ -82,7 +90,8 @@ struct BibleFormView: View {
 
 
 #Preview {
+    @Previewable @State var openBibleForm:Bool = true
     let dataService = DataService()
-    return BibleFormView()
+    BibleFormView()
         .environment(dataService)
 }

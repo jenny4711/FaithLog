@@ -14,6 +14,7 @@ struct QtFormView: View {
     @State  var medit:String = ""
     @State var application:String = ""
     @State var pray:String = ""
+    @State var paths:String = "medit"
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) var dismiss
     @Environment(DataService.self) var api
@@ -39,6 +40,7 @@ struct QtFormView: View {
                         if !api.selectedBible.isEmpty {
                             let firstVerse = api.selectedBible[0]
                             let lastVerse = api.selectedBible.last!
+                            item.bible = firstVerse.title
                             item.address = "\(firstVerse.title) \(firstVerse.chapter)장 \(firstVerse.verse)절-\(lastVerse.verse)절"
                         } else {
                             item.address = "선택된 성경 구절 없음"
@@ -50,7 +52,7 @@ struct QtFormView: View {
                         dismiss()
                     }) {
                         Text("저장")
-                            .foregroundColor(Color.red)
+                            .foregroundColor(Color.customText)
                     }
                 }
                 .padding(.horizontal,24)
@@ -67,23 +69,36 @@ struct QtFormView: View {
                                     .foregroundColor(Color.colorBackground)
                             }
                     }//:BUTTON
+                    
+                    
+                    
                     // MARK: - 타이틀(title)
                     
                     
                     VStack(alignment:.leading) {
                         Text("Title")
+                            
                             .font(Font.bold15)
                             .foregroundColor(Color.colorText)
-                        TextField("",text:$title,axis:.vertical)
-                            .frame(height:60)
-                            .lineLimit(1...3)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .background(Color.white)
-                            .accentColor(Color.colorText)
-                            .tint(Color.colorText)
-                            .colorScheme(.light) // 강제로 라이트모드 적용
-                            .cornerRadius(10)
-                    }
+                        HStack {
+                            TextField("",text:$title,axis:.vertical)
+                                .frame(height:60)
+                                .lineLimit(1...3)
+                                .textFieldStyle(PlainTextFieldStyle())
+//                                .background(Color.colorText)
+                                .foregroundColor(Color.customBackground)
+                            
+//                                .tint(Color.colorText)
+                               /* .colorScheme(.light)*/ // 강제로 라이트모드 적용
+                                .padding(.leading,16)
+                                
+                        }
+                        .background(Color.customText)
+                        .cornerRadius(10)
+                       
+                    }//:VStack(title)
+                    
+
                     
                     
                     
@@ -94,17 +109,45 @@ struct QtFormView: View {
                         ShowBibleView()
                     }
                    
-                    
-                    // MARK: - 묵상하기(medit)
-                   QtTextFieldView(item: $medit, title: "묵상")
+                    if paths == "medit"{
+                        // MARK: - 묵상하기(medit)
+                       QtTextFieldView(item: $medit, title: "묵상")
+                    }
+                    if paths == "appl"{
+                        // MARK: - 적용(appl)
+                        QtTextFieldView(item: $application, title: "적용")
+                    }
+                    if paths == "pray"{
+                        
+                          // MARK: - 기도(pray)
+                          QtTextFieldView(item: $pray, title: "기도")
+                    }
+                  
 
-                    // MARK: - 적용(appl)
-                    QtTextFieldView(item: $application, title: "적용")
-                    // MARK: - 기도(pray)
-                    QtTextFieldView(item: $pray, title: "기도")
+                  
+                    
+                    
+                    HStack{
+                        Spacer()
+                        Button(action: {
+                            if paths == "medit"{
+                                paths = "appl"
+                            }else if paths == "appl"{
+                                paths = "pray"
+                            }else{
+                                paths = "medit"
+                            }
+                        }) {
+                            Text("다음")
+                                .foregroundColor(Color.customText)
+                        }
+                      
+                    }
+                    
                     
                     
                 }
+                .scrollIndicators(.hidden)
                 .padding(.horizontal,24)
                 .background(Color.colorBackground)
             }
@@ -141,15 +184,18 @@ struct ShowBibleView: View {
                         b in
                         Text(b.content)
                             .font(Font.black18)
-                            .foregroundColor(Color.colorText)
+                            .foregroundColor(Color.customBackground)
+                            .padding(.vertical,8)
                     }
                 }
-                .frame(height:160)
+                .scrollIndicators(.hidden)
+                .frame(height:250)
                 .padding()
                 
             }
-            .frame(maxWidth:.infinity,maxHeight:160)
-            .background(Color.white)
+          
+            .frame(maxWidth:.infinity,maxHeight:300)
+            .background(Color.customText)
             .cornerRadius(10)
         }
     }

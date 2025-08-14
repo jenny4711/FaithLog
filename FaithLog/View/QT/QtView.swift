@@ -10,6 +10,7 @@ import SwiftData
 struct QtView: View {
     @State var openForm:Bool = false
     @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) var dismiss
     @Query(sort:\Qt.date,order:.reverse) private var Qts:[Qt]
     
     var body: some View {
@@ -22,6 +23,18 @@ struct QtView: View {
                     .font(Font.heavy25)
                     .foregroundColor(Color.colorText)
                 VStack{
+                
+                    HStack{
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.backward")
+                              
+                                .tint(Color.customText)
+                        }
+                     Spacer()
+                    }
+                    .padding(.leading,16)
                     VStack{
                         Image("logo")
                             .padding(.bottom,20)
@@ -34,11 +47,21 @@ struct QtView: View {
                  List {
                       ForEach(Qts) { item in
                           NavigationLink {
-                              QtDetail()
+                              QtDetail(item:item)
                           } label: {
                               QtListCellView(item: item)
                           }
                           .listRowBackground(Color.customBackground) // 각 셀 배경색
+                          .swipeActions(edge:.trailing) {
+                              Button(action: {
+                                  context.delete(item)
+                              }) {
+                                  Image(systemName: "trash")
+                              }
+                              .tint(Color.customBackground)
+                             
+                          }
+                       
                       }
                   }
                   .listStyle(PlainListStyle())
@@ -63,7 +86,7 @@ struct QtView: View {
 
         }//:NAVIGATIONSTACK
         
-
+        .navigationBarBackButtonHidden(true)
         
     }
 }
