@@ -11,10 +11,12 @@ import SwiftData
 class Sunday{
     @Attribute(.externalStorage) var photo:Data?
     var note:String = ""
-    
-    init(photo: Data? = nil, note: String = "") {
+    var date:Date = Date()
+    var title:String = ""
+    init(photo: Data? = nil, note: String = "",title:String = "") {
         self.photo = photo
         self.note = note
+        self.title = title
     }
     
 }

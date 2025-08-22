@@ -41,7 +41,7 @@ struct Onboarding: View {
                     
                     HStack{
                         NavigationLink{
-                            SundayFormView()
+                            SundayView()
                         }label:{
                            SectionBtns(title: "SunDay")
                             

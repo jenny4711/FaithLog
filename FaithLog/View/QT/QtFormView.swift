@@ -87,9 +87,7 @@ struct QtFormView: View {
                                 .textFieldStyle(PlainTextFieldStyle())
 //                                .background(Color.colorText)
                                 .foregroundColor(Color.customBackground)
-                            
-//                                .tint(Color.colorText)
-                               /* .colorScheme(.light)*/ // 강제로 라이트모드 적용
+                        
                                 .padding(.leading,16)
                                 
                         }

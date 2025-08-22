@@ -10,6 +10,12 @@ import SwiftUI
 struct QtDetail: View {
     var item :Qt?
     @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) var context
+    @State  var isEdit:Bool = false
+    @State  var edMedit:String = ""
+    @State var edAppl:String = ""
+    @State  var edPray:String = ""
+    @State var edTitle:String = ""
     var body: some View {
         VStack(alignment:.leading) {
             HStack{
@@ -21,14 +27,45 @@ struct QtDetail: View {
                         .tint(Color.customText)
                 }
              Spacer()
+                
+                Button(action: {
+                    if isEdit {
+                        // 저장 로직
+                        if let qtItem = item {
+                            if edTitle != ""{
+                                qtItem.title = edTitle
+                            }
+                            if edMedit != ""{
+                                qtItem.medit = edMedit
+                            }
+                            if edAppl != ""{
+                                qtItem.appl = edAppl
+                            }
+                            if edPray != ""{
+                                qtItem.pray = edPray
+                            }
+                           
+                            
+                        
+                            try? context.save()
+                        }
+                        isEdit = false
+                    } else {
+                        isEdit = true
+                    }
+                }) {
+                    Text(isEdit ? "Save" : "Edit")
+                        .foregroundColor(Color.customText)
+                }
             }
-            .padding(.leading,20)
+            .padding(.horizontal,20)
           ScrollView{
                 
                 
                 // MARK: - bible
                 
               HStack{
+                  
                   Text(item?.bible ?? "")
                       .font(Font.black36)
                   Spacer()
@@ -36,8 +73,16 @@ struct QtDetail: View {
              // MARK: - title
               HStack{
                   VStack{
-                      Text(item?.title ?? "")
-                          .font(Font.light26)
+                      
+                      if isEdit {
+                          DetailITemEditView(isEdint: $isEdit, editField: $edTitle, item: item?.title ?? "", title: "제목")
+                      }else{
+                          Text(item?.title ?? "")
+                              .font(Font.light26)
+                      }
+                      
+                      
+                     
                   }
                   .frame(maxWidth:UIScreen.main.bounds.width/2,alignment:.leading)
                 
@@ -61,7 +106,15 @@ struct QtDetail: View {
               if item?.medit == "" {
                   EmptyView()
               }else{
-                  DetailItemView(item:item?.medit ?? "", title:"묵상")
+         
+                  if isEdit {
+                      DetailITemEditView(isEdint: $isEdit, editField: $edMedit, item: item?.medit ?? "", title: "묵상")
+                  }else{
+                      DetailItemView(item:item?.medit ?? "", title:"묵상")
+                  }
+               
+                  
+              
               }
               
           
@@ -71,7 +124,12 @@ struct QtDetail: View {
               if item?.appl == "" {
                  EmptyView()
               }else{
-                  DetailItemView(item: item?.appl ?? "", title: "적용")
+                  if isEdit{
+                      DetailITemEditView(isEdint: $isEdit, editField: $edAppl, item: item?.appl ?? "", title: "적용")
+                  }else{
+                      DetailItemView(item: item?.appl ?? "", title: "적용")
+                  }
+                
               }
          
           
@@ -79,7 +137,12 @@ struct QtDetail: View {
               if item?.pray == "" {
                   EmptyView()
               }else{
-                  DetailItemView(item: item?.pray ?? "", title: "기도")
+                  if isEdit{
+                      DetailITemEditView(isEdint: $isEdit, editField: $edPray, item: item?.pray ?? "", title: "기도")
+                  }else{
+                      DetailItemView(item: item?.pray ?? "", title: "기도")
+                  }
+              
               }
              
                 Spacer()
@@ -98,6 +161,12 @@ struct QtDetail: View {
     }
 }
 
+
+
+
+
+
+
 #Preview {
-    QtDetail()
+    QtDetail(edMedit:"" , edAppl: "", edPray: "")
 }

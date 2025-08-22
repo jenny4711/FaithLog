@@ -12,10 +12,22 @@ import SwiftData
 class DataService {
     var bible: [BibleBK] = []
     var selectedBible:[BibleBK] = []
+    var bibleResp:String = ""
     var selected:Bool = false
     var errorMsg: String?
     private let bibleURL = "https://bibleapi-fr2x.onrender.com/nb"
-    
+
+   
+
+
+
+
+
+
+
+
+
+    //MARK: - Bible Verse
     
     func toggleBibleVerse(_ verse: String) {
            let selected = bible.filter { $0.verse == verse }
@@ -71,13 +83,13 @@ class DataService {
         }
         
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, _) = try await URLSession.shared.data(from: url)
             
             if let bibleList = parseJSON(data) {
                 print("bibleList:--------\(bibleList)")
                 await MainActor.run {
                     print("🔢 Before sorting: \(bibleList.map { $0.verse })")
-                    var shortredBible = bibleList.sorted{ first, second in
+                    let shortredBible = bibleList.sorted{ first, second in
                         let firstVerse = Int(first.verse) ?? 0
                         let secondVerse = Int(second.verse) ?? 0
                         return firstVerse < secondVerse
@@ -86,6 +98,16 @@ class DataService {
                     self.bible = shortredBible
                 }
             }
+            
+            
+             // MARK: - RESP
+            
+            if let resp = parseJSONresp(data){
+                await MainActor.run{
+                    self.bibleResp = resp
+                }
+            }
+            
         } catch {
             print("Network error: \(error)")
             await MainActor.run {
@@ -104,7 +126,7 @@ class DataService {
         
         do {
             let decoded = try decoder.decode(BibleResponse.self, from: data)
-            print("✅ Successfully decoded: \(decoded.result.count) verses")
+            print("✅ Successfully decoded: \(decoded.resp) verses!!!!!!!!!!!!")
             return decoded.result
         } catch let DecodingError.keyNotFound(key, context) {
             print("❌ Key not found: \(key) at \(context.codingPath)")
@@ -117,7 +139,27 @@ class DataService {
     }
     
     
-    
+    func parseJSONresp(_ data: Data) -> String? {
+        let decoder = JSONDecoder()
+        
+        // 실제 JSON 응답 확인
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("🔍 Raw JSON response: \(jsonString)")
+        }
+        
+        do {
+            let decoded = try decoder.decode(BibleResponse.self, from: data)
+           
+            return decoded.resp
+        } catch let DecodingError.keyNotFound(key, context) {
+            print("❌ Key not found: \(key) at \(context.codingPath)")
+            return nil
+        } catch {
+            print("❌ JSON decode error: \(error)")
+            print("❌ Error details: \(error.localizedDescription)")
+            return nil
+        }
+    }
     
     
 }

@@ -15,70 +15,71 @@ struct QtView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack{
+            ZStack {
                 Color.colorBackground
                     .ignoresSafeArea()
-                
-                
                     .font(Font.heavy25)
                     .foregroundColor(Color.colorText)
-                VStack{
                 
-                    HStack{
+                VStack {
+                    HStack {
                         Button(action: {
                             dismiss()
                         }) {
                             Image(systemName: "chevron.backward")
-                              
                                 .tint(Color.customText)
                         }
-                     Spacer()
+                        Spacer()
                     }
-                    .padding(.leading,16)
-                    VStack{
+                    .padding(.leading, 16)
+                    
+                    VStack {
                         Image("logo")
-                            .padding(.bottom,20)
+                            .padding(.bottom, 20)
                         Text("Qt List")
                             .font(Font.heavy25)
-                        
-                    }//:VSTACK(logo and title)
-                    .padding(.vertical,20)
-                    .foregroundColor(Color.colorText)
-                 List {
-                      ForEach(Qts) { item in
-                          NavigationLink {
-                              QtDetail(item:item)
-                          } label: {
-                              QtListCellView(item: item)
-                          }
-                          .listRowBackground(Color.customBackground) // 각 셀 배경색
-                          .swipeActions(edge:.trailing) {
-                              Button(action: {
-                                  context.delete(item)
-                              }) {
-                                  Image(systemName: "trash")
-                              }
-                              .tint(Color.customBackground)
-                             
-                          }
-                       
-                      }
-                  }
-                  .listStyle(PlainListStyle())
-                  .background(Color.customBackground) // 전체 List 배경색
-
-                 
-                   
-                    .padding(.horizontal,24)
-                    HStack{
+                            .foregroundColor(Color.customText)
+                    } //:VSTACK(logo and title)
+                    
+                    // MARK: - LIST
+                    List {
+                        ForEach(Qts) { item in
+                            NavigationLink {
+                                QtDetail(item: item)
+                            } label: {
+                                QtListCellView(item: item)
+                            }
+                            .swipeActions(edge:.trailing) {
+                                Button(action: {
+                                    context.delete(item)
+                                }) {
+                                    Image(systemName: "trash")
+                                }
+                                .tint(Color.customBackground)
+                                
+                            }
+                            .listRowBackground(Color.customBackground)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
+                        }
+                    }
+                    .listStyle(PlainListStyle())
+                    .listRowSpacing(12)
+                    .background(Color.customBackground)
+                    .padding(.horizontal, 24)
+                } //:VSTACK(LIST)
+                
+                // PlusBtnView를 ZStack으로 떠있게 배치
+                VStack {
+                    Spacer()
+                    HStack {
                         Spacer()
                         PlusBtnView(openForm: $openForm)
                     }
-                    .padding(.trailing,24)
-                }//:VSTACK(LIST)
-                .background(Color.customBackground)
-                
-            }//:ZSTACK
+                    .padding(.trailing, 24)
+                    .padding(.bottom, 24)
+                }
+            } //:ZSTACK
             .sheet(isPresented: $openForm) {
                 QtFormView()
             }

@@ -14,7 +14,7 @@ struct BibleFormView: View {
     @State var selectedBible: Bible?
     @State var aiResult:String = ""
     @State var chapter: Int = 1
-   @StateObject private  var askAI = AskAI()
+//   @StateObject private  var askAI = AskAI()
   
     var body: some View {
         VStack{
@@ -25,16 +25,18 @@ struct BibleFormView: View {
                     Task{
                         await api.getBibleResult(selectedBible?.initial ?? "", selectedBible?.title ?? "", chapter: String(chapter))
                         
-                      
+                        print((selectedBible?.title ?? "") as String)
                    
                         openResult = true
                         
                     }
                               
                 }) {
+                    
                     Text("DONE")
                         .font(Font.semi20)
                 }
+                .disabled(selectedBible?.title == "선택하기")
             }//:HSTACK
             .padding(.top,20)
             
@@ -44,6 +46,7 @@ struct BibleFormView: View {
                     Picker("성경",selection:$selectedBible){
                         ForEach(address,id:\.id){
                             a in
+                            
                             Text(a.title).tag(a)
                                 .font(Font.semi20)
                                 .foregroundColor(Color.customBackground)
@@ -61,9 +64,18 @@ struct BibleFormView: View {
                 Picker("장",selection:$chapter){
                     ForEach(1...(selectedBible?.pg ?? 1),id:\.self){
                         ch in
-                        Text("\(ch) 장").tag(ch)
-                            .font(Font.semi20)
-                            .foregroundColor(Color.customBackground)
+                        if selectedBible?.title == "선택하기"{
+                            Text("")
+                        }else{
+                            Text("\(ch) 장").tag(ch)
+                                .font(Font.semi20)
+                                .foregroundColor(Color.customBackground)
+                        }
+                       
+                        
+                         
+                        
+                       
                     }
                 }//:PICKER(CHAPTER)
                 .pickerStyle(.wheel)

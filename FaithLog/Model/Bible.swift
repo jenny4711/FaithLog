@@ -27,6 +27,7 @@ struct Bible:Codable,Identifiable,Hashable{
 struct BibleResponse: Decodable {
     let message: String
     let result: [BibleBK]   // ✅ 여기에 진짜 데이터 배열이 들어 있음
+    let resp:String?
 }
 
 @Model
