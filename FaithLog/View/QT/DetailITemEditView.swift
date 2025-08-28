@@ -38,7 +38,7 @@ struct DetailITemEditView: View {
                     .padding(.vertical, 8)
                     .scrollContentBackground(.hidden)
                     .font(Font.reg18)
-                    .accentColor(Color.customText)
+//                    .accentColor(Color.customText)
                     .foregroundColor(Color.customBackground)
                     .background(Color.customText)
                     .cornerRadius(8)

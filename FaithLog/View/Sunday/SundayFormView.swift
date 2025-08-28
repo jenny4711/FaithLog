@@ -10,6 +10,7 @@ import SwiftData
 import PhotosUI
 
 struct SundayFormView: View {
+    @State  var isEdit:Bool = true
     @State private var photosPickerItem: PhotosPickerItem?
     @State private var newSunday = Sunday()
     @State private var title:String = ""
@@ -25,7 +26,7 @@ struct SundayFormView: View {
                 Button(action: {
                     let item = Sunday()
                     item.title = title
-                    item.note = newSunday.note
+                    item.note = newNote
                     item.photo = newSunday.photo
                     context.insert(item)
                     dismiss()
@@ -37,7 +38,7 @@ struct SundayFormView: View {
                 }
             }
             .padding(.top,24)
-          
+            
             VStack {
                 
                 // MARK: - 타이틀(title)
@@ -45,7 +46,7 @@ struct SundayFormView: View {
                 
                 VStack(alignment:.leading) {
                     Text("Title")
-                        
+                    
                         .font(Font.bold15)
                         .foregroundColor(Color.colorText)
                     HStack {
@@ -53,15 +54,15 @@ struct SundayFormView: View {
                             .frame(height:60)
                             .lineLimit(1...3)
                             .textFieldStyle(PlainTextFieldStyle())
-
+                        
                             .foregroundColor(Color.customBackground)
-                    
+                        
                             .padding(.leading,16)
-                            
+                        
                     }
                     .background(Color.customText)
                     .cornerRadius(10)
-                   
+                    
                 }//:VStack(title)
                 .padding(.horizontal,24)
                 .padding(.bottom, 24) // 타이틀 아래 간격 추가
@@ -79,95 +80,90 @@ struct SundayFormView: View {
                 } else {
                     //MARK: -photo picker
                     ZStack{
-                       
+                        
                         Circle()
                             .frame(width: 80,height:80)
                             .foregroundColor(Color.customText)
                         PhotosPicker(selection: $photosPickerItem, matching: .images) {
                             Label("", systemImage: "photo.badge.plus")
                                 .foregroundColor(Color.customBackground)
-                                
-                               
+                            
+                            
                         }
                         .listRowSeparator(.hidden)
                         
                     }//:ZSTACK
                     .padding(.bottom, 24) // 사진 선택기 아래 간격 추가
                 }
-
                 
-                ScrollView{
-                    Text(newSunday.note ?? "")
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                
+                
+                VStack{
+                    TextEditor(text: $newNote)
+                        .frame(minHeight: 150, maxHeight: 500)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .scrollContentBackground(.hidden)
+                        .font(Font.reg18)
+                        .accentColor(Color.customBackground)
+                        .foregroundColor(Color.customBackground)
+                        .background(Color.customText)
+                        .cornerRadius(8)
+                        .lineSpacing(13)
+                   
+
+                    
+                    Spacer() // 하단 여백 추가
+                    
                 }
-                .frame(maxHeight: 200) // ScrollView 높이 제한
-                .padding(.horizontal, 24) // 좌우 패딩 추가
+                .onAppear{
+                    newNote = newSunday.note
+                }
                 
-                Spacer() // 하단 여백 추가
-                
-            }
-            .frame(maxWidth:.infinity)
+                .frame(maxWidth:.infinity)
+                .background(Color.customBackground)
+                .padding(.horizontal,16)
+                .onChange(of: photosPickerItem) { _, newValue in
+                    Task {
+                        
+                        guard let item = newValue,
+                              let data = try? await item.loadTransferable(type: Data.self) else {
+                            print("Failed to load image data")
+                            return
+                        }
+                        
+                        await MainActor.run {
+                            newSunday.photo = data
+                            askAi.isLoading = true
+                        }
+                        
+                        // ✅ async/await로 한 줄
+                        let note = await askAi.recognizeTextAsync(from: data)
+                        await MainActor.run {
+                            newSunday.note = note
+                            newNote = note
+                            askAi.isLoading = false
+                        }
+                        
+                        
+                    }//:TASK
+                    
+                    
+                }//:ONCHANGE
+            }//:VSTACK
             .background(Color.customBackground)
-            .onChange(of: photosPickerItem) { _, newValue in
-                Task {
-                    
-                    guard let item = newValue,
-                                 let data = try? await item.loadTransferable(type: Data.self) else {
-                               print("Failed to load image data")
-                               return
-                           }
-
-                           await MainActor.run {
-                               newSunday.photo = data
-                               askAi.isLoading = true
-                           }
-
-                           // ✅ async/await로 한 줄
-                           let note = await askAi.recognizeTextAsync(from: data)
-                           await MainActor.run {
-                               newSunday.note = note
-                               askAi.isLoading = false
-                           }
-                    
-                    
-                    
-                    
-                    
-                    
-//                    if let newValue = newValue {
-//                        if let imageData = try? await newValue.loadTransferable(type: Data.self) {
-//                            await MainActor.run {
-//                                newSunday.photo = imageData
-//                            }
-//                            print("Image loaded successfully, size: \(imageData.count) bytes")
-//                            
-//                            // AI 서비스로 이미지 전송
-//                            do {
-//                                let note = try await askAi.getNote(imageData)
-//                                await MainActor.run {
-//                                    newSunday.note = note
-//                                   
-//                                }
-//                                print("AI note generated: \(note)")
-//                            } catch {
-//                                print("Failed to get AI note: \(error)")
-//                            }
-//                        } else {
-//                            print("Failed to load image data")
-//                        }
-//                    }
-                }//:TASK
-                
-
-            }//:ONCHANGE
-        }//:VSTACK
+            
+        }
         .background(Color.customBackground)
-        
-        
-      
     }
+    
 }
+    
+    
+    
+    
+    
+    
 
 #Preview {
     SundayFormView()

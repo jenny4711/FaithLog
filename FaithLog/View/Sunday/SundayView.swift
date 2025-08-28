@@ -97,9 +97,6 @@ struct SundayView: View {
             })
             .background(Color.customBackground)
 
-           
-        
-         
          
         }//:NAVITATIONSTACK
     

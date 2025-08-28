@@ -49,24 +49,21 @@ struct QtView: View {
                             } label: {
                                 QtListCellView(item: item)
                             }
-                            .swipeActions(edge:.trailing) {
-                                Button(action: {
-                                    context.delete(item)
-                                }) {
-                                    Image(systemName: "trash")
-                                }
-                                .tint(Color.customBackground)
-                                
-                            }
                             .listRowBackground(Color.customBackground)
                             .listRowSeparator(.hidden)
                             .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-                        }
-                    }
+                        }//:LOOP
+                        
+
+                    }//:LIST
+                    
+
+                    .scrollIndicators(.hidden)
                     .listStyle(PlainListStyle())
                     .listRowSpacing(12)
                     .background(Color.customBackground)
                     .padding(.horizontal, 24)
+                    
                 } //:VSTACK(LIST)
                 
                 // PlusBtnView를 ZStack으로 떠있게 배치
@@ -132,6 +129,7 @@ struct PlusBtnView: View {
                 Circle()
                     .fill(Color.customText)
                     .frame(width:70)
+                    .shadow(radius: 10)
                 
                 Image(systemName: "plus")
                     .font(Font.black30)

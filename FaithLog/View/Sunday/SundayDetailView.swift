@@ -10,8 +10,11 @@ import SwiftUI
 struct SundayDetailView: View {
     var item :Sunday?
     @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) var context
+    @State private var isEdit:Bool = false
+    @State private var edNote:String = ""
     var body: some View {
-        ZStack{
+        ZStack(alignment:.leading){
             Color.customBackground
                 .ignoresSafeArea()
             VStack{
@@ -24,17 +27,57 @@ struct SundayDetailView: View {
                             .tint(Color.customText)
                     }
                  Spacer()
+                    if isEdit{
+                        Button(action: {
+                            
+                            if let sunday = item{
+                                sunday.note = edNote
+                                try?context.save()
+                                isEdit = false
+                            }
+                        }) {
+                            Text("Save")
+                        }
+                    }else{
+                        Button(action: {
+                           
+                            
+                              isEdit = true
+                            
+                        }) {
+                            Text("Edit")
+                                .foregroundColor(Color.customText)
+                        }
+                    }
+                       
+                    
                 }
-                .padding(.leading,20)
-                
-                ScrollView{
-                    MarkdownStyledText(markdown: item?.note ?? "")
-//                    Text(item?.note ?? "")
+                .padding(.horizontal,20)
+                HStack{
+                    Text(item?.title ?? "")
+                        .font(Font.semi20)
                         .foregroundColor(Color.customText)
                 }
+                
+                if isEdit{
+                    DetailITemEditView(isEdint: $isEdit, editField: $edNote, item: item?.note ?? "", title: "")
+                }else{
+                    ScrollView{
+                        MarkdownStyledText(markdown: item?.note ?? "")
+    //                    Text(item?.note ?? "")
+                            .foregroundColor(Color.customText)
+                    }//:SCROLLVIEW
+                    .scrollIndicators(.hidden)
+                }
+
+                
+
             }
             .background(Color.customBackground)
         }//:ZSTACK
+        .onAppear{
+            edNote = item?.note ?? "Empty"
+        }
         .navigationBarBackButtonHidden(true)
 
     }
