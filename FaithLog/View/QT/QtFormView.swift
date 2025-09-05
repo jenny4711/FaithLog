@@ -136,8 +136,23 @@ struct QtFormView: View {
                                 paths = "medit"
                             }
                         }) {
-                            Text("다음")
-                                .foregroundColor(Color.customText)
+                            Circle()
+                                .frame(width:70)
+                                .tint(Color.customText)
+                                .overlay{
+                                    VStack {
+                                        Text(
+                                            paths == "medit" ? "적용" :(paths == "appl" ? "기도" :  "묵상")
+                                        )
+                                       
+                                        Text("작성하기")
+                                    }
+                                    .font(Font.bold15)
+                                    .foregroundColor(Color.customBackground)
+                                    
+                                }
+                            
+                            
                         }
                       
                     }

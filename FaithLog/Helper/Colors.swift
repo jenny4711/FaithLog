@@ -12,4 +12,6 @@ extension Color{
     
     static let customBackground = Color("ColorBackground")
     static let customText = Color("ColorText")
+    static  let customOneText = Color("OneColorText")
+    
 }

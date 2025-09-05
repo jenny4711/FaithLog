@@ -37,14 +37,14 @@ struct Onboarding: View {
                             NavigationLink{
                                 QtView()
                             }label:{
-                                SectionBtns(title: "QT")
+                                SectionBtns(title: "묵상")
                                 
                             }//: NavigationLink(QTBTN)
                             
                             Button(action: {
                                 showBibleForm = true
                             }) {
-                                SectionBtns(title: "Bible")
+                                SectionBtns(title: "성경")
                             }//:BTN(BIBLE)
                             
                             
@@ -56,9 +56,20 @@ struct Onboarding: View {
                             NavigationLink{
                                 SundayView()
                             }label:{
-                                SectionBtns(title: "SunDay")
+                                SectionBtns(title: "주일 예배")
                                 
                             }//: NavigationLink(Sunday)
+                            
+                            
+                            NavigationLink{
+                                Fav()
+                                
+                            }label:{
+                                SectionBtns(title: "마음의구절")
+                            }
+                            
+                            
+                            
                         }
                         
                         
@@ -102,14 +113,9 @@ struct Onboarding: View {
             }//:VSTACK
             .sheet(isPresented:$setAlarm){
                 TimePicker(hr: $hr, m: $m)
-                    .presentationDetents([.fraction(0.3)])
+                    .presentationDetents([.fraction(0.5)])
             }
-            .onChange(of: hr) {_, newHr in
-                NotificationManager.shared.scheduleDaily(hour: newHr, minute: m)
-            }
-            .onChange(of: m) {_, newMin in
-                NotificationManager.shared.scheduleDaily(hour: hr, minute: newMin)
-            }
+
 
             .background(
                 Color.customBackground
@@ -166,9 +172,19 @@ func addNotification(for hour:Int,min:Int?){
 struct TimePicker: View {
     @Binding var hr: Int   // 0...23
     @Binding var m: Int    // 0...59
-
+    @State private var alarms: [ScheduledAlarm] = []
+    @State private var isLoading = false
     var body: some View {
         VStack {
+            HStack{
+                Spacer()
+                Button(action: {
+                    NotificationManager.shared.scheduleDaily(hour: hr, minute: m)
+                    
+                }) {
+                    Text("DONE")
+                }
+            }
             Text(String(format: "시간: %02d:%02d", hr, m))
                 .font(Font.med20)
                 .padding(.top,16)
@@ -208,13 +224,103 @@ struct TimePicker: View {
 
              
             }
+            
+            
+           ScrollView{
+                if alarms.isEmpty && !isLoading {
+                               Text("예약된 알림이 없습니다.")
+                                   .foregroundColor(.secondary)
+                           }
+                
+                ForEach(alarms){
+                    alarm in
+                    HStack{
+                        HStack{
+                            Text(timeString(alarm))
+                                                      .font(.headline)
+                            Spacer()
+                            HStack{
+                                if alarm.repeats { Chip("매일") }
+                                                           Text(alarm.title.isEmpty ? "알림" : alarm.title)
+                                                               .foregroundColor(.secondary)
+                                                               .font(.caption)
+                            
+                            
+                            }//:HSTACK
+                            
+
+                    }
+                        
+                        Spacer()
+                        Button(role: .destructive) {
+                                             NotificationManager.shared.cancel(id: alarm.id)
+                                             reload()
+                                         } label: {
+                                             Image(systemName: "trash")
+                                         }
+                                         .buttonStyle(.borderless)
+                    
+                        
+                }
+                   
+                    .padding(.horizontal,60)
+                
+            }//:ScrollView
+            
+               
+            
+            
+            
+            
+            
         }//:VSTACK
-        .background(Color.customText)
-        
+//        .background(Color.customText)
+        .navigationTitle("알림 목록")
+             .refreshable { reload() }
+             .onAppear { reload() }
         
 
-    }
+        }//:VSTACK
+        .background(
+            Color.customBackground
+        )
+        
+
 }
+
+
+private func reload() {
+      isLoading = true
+      NotificationManager.shared.getPending { list in
+          self.alarms = list
+          self.isLoading = false
+      }
+  }
+
+  private func timeString(_ alarm: ScheduledAlarm) -> String {
+      if let h = alarm.hour, let m = alarm.minute {
+          return String(format: "%02d:%02d", h, m)
+      }
+      // 시간 정보가 없으면 식별자 표시(예외 케이스)
+      return alarm.id
+  }
+}
+
+// 작은 "칩" 스타일 레이블
+private struct Chip: View {
+  var text: String
+  init(_ text: String) { self.text = text }
+  var body: some View {
+      Text(text)
+          .font(.caption2)
+          .padding(.vertical, 3)
+          .padding(.horizontal, 6)
+          .background(Color(.systemGray5))
+          .clipShape(Capsule())
+  }
+}
+
+
 
 
 

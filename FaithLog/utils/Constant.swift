@@ -40,7 +40,11 @@ let address: [Bible] = [
     Bible(title: "데살로니가후서", label: "데살로니가후서", value: "데살로니가후서", pg: 3, version: "신약", initial: "th2"),
     Bible(title: "데살로니가전서", label: "데살로니가전서", value: "데살로니가전서", pg: 5, version: "신약", initial: "th1"),
     Bible(title: "골로새서", label: "골로새서", value: "골로새서", pg: 4, version: "신약", initial: "col"),
-    Bible(title: "요한계시록", label: "요한계시록", value: "요한계시록", pg: 22, version: "신약", initial: "rev")
+    Bible(title: "요한계시록", label: "요한계시록", value: "요한계시록", pg: 22, version: "신약", initial: "rev"),
+  Bible(title:"유다서",label:"유다서",value: "유다서",pg:1,version: "구약",initial: "jud"),
+  Bible(title: "말라기", label: "말라기", value: "말라기", pg: 4, version: "구약", initial: "mal"),
+  Bible(title: "스가랴", label: "스가랴", value: "스가랴", pg: 14, version: "구약", initial: "zech"),
+  Bible(title: "학개", label: "학개", value: "학개", pg: 2, version: "구약", initial: "hag")
     
 ]
  let sampleAddress:Bible = address[0]

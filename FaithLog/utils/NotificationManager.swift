@@ -71,4 +71,79 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
+    
+    
+    
+    
+    func scheduleDailyForVerse(hour: Int, minute: Int,content:String,address:String) {
+        guard (0...23).contains(hour), (0...59).contains(minute) else { return }
+
+        let center = UNUserNotificationCenter.current()
+
+        let content = UNMutableNotificationContent()
+        content.title = address
+        content.subtitle = "\(content)"
+        content.sound = .default
+
+        var comps = DateComponents()
+        comps.hour = hour
+        comps.minute = minute
+
+        let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
+        let request = UNNotificationRequest(identifier: "daily-\(hour)-\(minute)", content: content, trigger: trigger)
+
+        // 동일 ID로 다시 예약하면 갱신 느낌으로 동작
+        center.add(request, withCompletionHandler: nil)
+    }
+    
+    
+    
+}
+
+
+
+
+
+
+
+struct ScheduledAlarm: Identifiable {
+    let id: String
+    let title: String
+    let hour: Int?
+    let minute: Int?
+    let repeats: Bool
+}
+
+extension NotificationManager {
+    // 현재 예약된(대기중) 알림들을 시간 정보로 변환해서 넘겨줍니다.
+    func getPending(completion: @escaping ([ScheduledAlarm]) -> Void) {
+        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+            let alarms: [ScheduledAlarm] = requests.compactMap { req in
+                if let trig = req.trigger as? UNCalendarNotificationTrigger {
+                    let h = trig.dateComponents.hour
+                    let m = trig.dateComponents.minute
+                    return ScheduledAlarm(
+                        id: req.identifier,
+                        title: req.content.title,
+                        hour: h,
+                        minute: m,
+                        repeats: trig.repeats
+                    )
+                } else {
+                    // 시간 트리거가 아닌 경우는 목록에서 제외(필요하면 표시 가능)
+                    return nil
+                }
+            }
+            // 시간순 정렬
+            let sorted = alarms.sorted {
+                ( ($0.hour ?? 0), ($0.minute ?? 0) ) < ( ($1.hour ?? 0), ($1.minute ?? 0) )
+            }
+            DispatchQueue.main.async { completion(sorted) }
+        }
+    }
+
+    // 식별자로 개별 취소
+    func cancel(id: String) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
+    }
 }

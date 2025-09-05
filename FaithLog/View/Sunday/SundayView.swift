@@ -35,8 +35,12 @@ struct SundayView: View {
                         .padding(.leading,16)
                         
                         VStack{
-                            Image("logo")
-                                .padding(.bottom,20)
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                Image("logo")
+                                    .padding(.bottom, 20)
+                            }
                             Text("Sunday List")
                                 .font(Font.heavy25)
                                 .foregroundColor(Color.customText)

@@ -34,8 +34,14 @@ struct QtView: View {
                     .padding(.leading, 16)
                     
                     VStack {
-                        Image("logo")
-                            .padding(.bottom, 20)
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image("logo")
+                                .padding(.bottom, 20)
+                        }
+                        
+                     
                         Text("Qt List")
                             .font(Font.heavy25)
                             .foregroundColor(Color.customText)
@@ -48,6 +54,14 @@ struct QtView: View {
                                 QtDetail(item: item)
                             } label: {
                                 QtListCellView(item: item)
+                            }
+                            .swipeActions(edge:.trailing){
+                                Button(action: {
+                                    context.delete(item)
+                                }) {
+                                    Image(systemName: "trash")
+                                }
+                                .tint(Color.customBackground)
                             }
                             .listRowBackground(Color.customBackground)
                             .listRowSeparator(.hidden)
@@ -80,6 +94,7 @@ struct QtView: View {
             .sheet(isPresented: $openForm) {
                 QtFormView()
             }
+           
             
 
         }//:NAVIGATIONSTACK

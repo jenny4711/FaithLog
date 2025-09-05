@@ -12,16 +12,46 @@ import SwiftData
 class DataService {
     var bible: [BibleBK] = []
     var selectedBible:[BibleBK] = []
+    var favoriteVerses:[BibleBK]  = []
     var bibleResp:String = ""
     var selected:Bool = false
+    var like:Bool = false
     var errorMsg: String?
+    
+    
     private let bibleURL = "https://bibleapi-fr2x.onrender.com/nb"
 
-   
+    // MARK: - Favorites verse btn func
+    // func saveFavVerse(_ verse:String){
+    //     let selected = bible.filter {$0.verse == verse}
+        
+    //     for item in selected {
+    //         if let idx = favoriteVerses.firstIndex(where:{$0.id == item.id}){
+    //             favoriteVerses.remove(at:idx)
+               
+
+    //             self.like = false
+    //         }else{
+    //             favoriteVerses.append(item)
+    //             self.like = true
+    //         }
+    //     }
+    // }
 
 
-
-
+func saveFavVerse(_ verse:String){
+        let selected = bible.filter {$0.verse == verse}
+        
+        for item in selected {
+            if let idx = favoriteVerses.firstIndex(where:{$0.id == item.id}){
+                favoriteVerses.remove(at:idx)
+                self.like = false
+            } else {
+                favoriteVerses.append(item)
+                self.like = true
+            }
+        }
+    }
 
 
 
