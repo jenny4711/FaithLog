@@ -159,7 +159,12 @@ struct QtDetail: View {
           
                 // MARK: - med
               if item?.medit == "" {
-                  EmptyView()
+                  if isEdit{
+                      DetailITemEditView(isEdint: $isEdit, editField: $edMedit, item: item?.medit ?? "", title: "묵상")
+                  }else{
+                      EmptyView()
+                  }
+                 
               }else{
          
                   if isEdit {
@@ -177,7 +182,13 @@ struct QtDetail: View {
               
                 // MARK: - appl
               if item?.appl == "" {
-                 EmptyView()
+                  
+                  if isEdit{
+                      DetailITemEditView(isEdint: $isEdit, editField: $edAppl, item: item?.appl ?? "", title: "적용")
+                  }else{
+                      EmptyView()
+                  }
+                
               }else{
                   if isEdit{
                       DetailITemEditView(isEdint: $isEdit, editField: $edAppl, item: item?.appl ?? "", title: "적용")
@@ -190,12 +201,20 @@ struct QtDetail: View {
           
                 // MARK: - pray
               if item?.pray == "" {
-                  EmptyView()
+                  if isEdit {
+                      DetailITemEditView(isEdint: $isEdit, editField: $edPray, item: item?.pray ?? "", title: "기도")
+                  }else{
+                      EmptyView()
+                  }
+                  
+                  
+                 
               }else{
                   if isEdit{
                       DetailITemEditView(isEdint: $isEdit, editField: $edPray, item: item?.pray ?? "", title: "기도")
                   }else{
-                      DetailItemView(item: item?.pray ?? "", title: "기도")
+                     
+                     DetailItemView(item: item?.pray ?? "", title: "기도")
                   }
               
               }

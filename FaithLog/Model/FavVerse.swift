@@ -41,5 +41,24 @@ class FavVerse{
          self.date = .now
     }
     
+    
+    // 하루당 1개만 사용(다음 날로 넘어갈수록 다음 구절), days 개 생성
+    func makeDailyVerseItems(from favs: [FavVerse], days: Int) -> [VerseItem] {
+        guard !favs.isEmpty, days > 0 else { return [] }
+        let key = "verseDayRotationIndex" // 일 단위 회전 인덱스
+        var idx = UserDefaults.standard.integer(forKey: key) // 기본 0
+
+        var out: [VerseItem] = []
+        out.reserveCapacity(days)
+        for _ in 0..<days {
+            let v = favs[idx % favs.count]
+            out.append(VerseItem(title: "\(v.title) \(v.chapter)장", body: v.content))
+            idx += 1
+        }
+        UserDefaults.standard.set(idx % max(1, favs.count), forKey: key)
+        return out
+    }
+
+    
 }
 

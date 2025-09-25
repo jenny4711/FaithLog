@@ -14,6 +14,15 @@ struct BibleFormView: View {
     @State var selectedBible: Bible?
     @State var aiResult:String = ""
     @State var chapter: Int = 1
+    @State private var verses: [String] = []
+   
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
+    
+    
 //   @StateObject private  var askAI = AskAI()
   
     var body: some View {
@@ -23,17 +32,23 @@ struct BibleFormView: View {
                 Spacer()
                                 Button(action: {
                     Task{
-                        await api.getBibleResult(selectedBible?.initial ?? "", selectedBible?.title ?? "", chapter: String(chapter))
                         
-                        print((selectedBible?.title ?? "") as String)
-                   
-                        openResult = true
+                        
+                        await api.getBibleResult(selectedBible?.initial ?? "", selectedBible?.title ?? "", chapter: String(chapter),enTitle: selectedBible?.enTitle ?? "",lang:lang)
+                            
+                         
+                       
+                            openResult = true
+                            
+                        
+                        
+                       
                         
                     }
                               
                 }) {
                     
-                    Text("DONE")
+                    Text(openResult ? "HOLD":"DONE")
                         .font(Font.semi20)
                 }
                 .disabled(selectedBible?.title == "선택하기")
@@ -47,7 +62,7 @@ struct BibleFormView: View {
                         ForEach(address,id:\.id){
                             a in
                             
-                            Text(a.title).tag(a)
+                            Text(lang ? a.title : a.enTitle).tag(a)
                                 .font(Font.semi20)
                                 .foregroundColor(Color.customBackground)
                         }

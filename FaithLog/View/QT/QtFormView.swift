@@ -15,9 +15,16 @@ struct QtFormView: View {
     @State var application:String = ""
     @State var pray:String = ""
     @State var paths:String = "medit"
+    @State var contents:String = ""
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) var dismiss
     @Environment(DataService.self) var api
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
+    
     var body: some View {
         ZStack {
             Color.colorBackground
@@ -34,6 +41,7 @@ struct QtFormView: View {
                         item.appl = application
                         item.pray = pray
                         item.content = api.selectedBible
+                     
                         item.date = Date()
                         
                         // 안전한 주소 생성
@@ -51,7 +59,7 @@ struct QtFormView: View {
                         
                         dismiss()
                     }) {
-                        Text("저장")
+                        Text(lang ? "저장" : "Save")
                             .foregroundColor(Color.customText)
                     }
                 }
@@ -65,7 +73,7 @@ struct QtFormView: View {
                             .tint(Color.colorText)
                             .cornerRadius(5)
                             .overlay {
-                                Text("성경보기")
+                                Text(lang ? "성경보기" : "Find Bible")
                                     .foregroundColor(Color.colorBackground)
                             }
                     }//:BUTTON
@@ -101,19 +109,29 @@ struct QtFormView: View {
                     
                     
                     // MARK: - content
-                    if api.selectedBible.isEmpty {
+                    if api.selectedBible.isEmpty && lang {
                         EmptyView()
-                    } else{
-                        ShowBibleView()
+                    }else if api.selectedBibleEn.isEmpty && !lang{
+                        EmptyView()
+                       
                     }
+                    else{
+                        if lang{
+                            ShowBibleView()
+                        }else{
+                            ShowBibleViewEn()
+                        }
+                       
+                    }
+                    
                    
                     if paths == "medit"{
                         // MARK: - 묵상하기(medit)
-                       QtTextFieldView(item: $medit, title: "묵상")
+                        QtTextFieldView(item: $medit, title:lang ? "묵상": "Meditation" )
                     }
                     if paths == "appl"{
                         // MARK: - 적용(appl)
-                        QtTextFieldView(item: $application, title: "적용")
+                        QtTextFieldView(item: $application, title:lang ? "적용" : "Application")
                     }
                     if paths == "pray"{
                         
@@ -141,11 +159,16 @@ struct QtFormView: View {
                                 .tint(Color.customText)
                                 .overlay{
                                     VStack {
-                                        Text(
-                                            paths == "medit" ? "적용" :(paths == "appl" ? "기도" :  "묵상")
-                                        )
+                                        if lang {
+                                            Text(
+                                                paths == "medit" ? "적용" :(paths == "appl" ? "기도" :  "묵상")
+                                            )
+                                        }else{
+                                           EmptyView()
+                                        }
+                                        
                                        
-                                        Text("작성하기")
+                                        Text(lang ? "작성하기" : "Next")
                                     }
                                     .font(Font.bold15)
                                     .foregroundColor(Color.customBackground)
@@ -175,7 +198,39 @@ struct QtFormView: View {
 }
 
 
-
+struct ShowBibleViewEn: View {
+    @Environment(DataService.self) var api
+    var body: some View {
+        VStack{
+            HStack {
+                Text("Content")
+                    .font(Font.bold15)
+                    .foregroundColor(Color.colorText)
+                Spacer()
+            }
+            VStack(alignment:.leading){
+                
+                ScrollView{
+                    ForEach(api.selectedBibleEn){
+                        b in
+                        Text(b.content)
+                            .font(Font.black18)
+                            .foregroundColor(Color.customBackground)
+                            .padding(.vertical,8)
+                    }
+                }
+                .scrollIndicators(.hidden)
+                .frame(height:250)
+                .padding()
+                
+            }
+          
+            .frame(maxWidth:.infinity,maxHeight:300)
+            .background(Color.customText)
+            .cornerRadius(10)
+        }
+    }
+}
 
 
 
@@ -185,7 +240,7 @@ struct ShowBibleView: View {
     var body: some View {
         VStack{
             HStack {
-                Text("Content")
+                Text("성경구절")
                     .font(Font.bold15)
                     .foregroundColor(Color.colorText)
                 Spacer()

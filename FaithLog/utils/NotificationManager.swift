@@ -5,145 +5,306 @@
 //  Created by Ji y LEE on 8/27/25.
 //
 
-import SwiftUI
+
+//
+//  NotificationManager.swift
+//  FaithLog
+//
+//
+//  NotificationManager.swift
+//  FaithLog
+//
+
+import Foundation
 import UserNotifications
+
+// MARK: - Models
+
+/// 알림에 들어갈 데이터(제목/본문)
+public struct VerseItem {
+    public let title: String   // 예: "잠언 12장"
+    public let body: String    // 예: 구절 내용
+}
+
+/// 예약된(대기중) 알림을 앱에서 보여줄 때 쓰는 모델 (선택)
+public struct ScheduledAlarm: Identifiable {
+    public let id: String
+    public let title: String
+    public let hour: Int?
+    public let minute: Int?
+    public let repeats: Bool
+    let year: Int?
+        let month: Int?
+        let day: Int?
+}
+
+// 알림 스타일 선택지
+public enum ReminderStyle {
+    case dailyOnce         // 매일 1회(반복)
+    case threeTimes6h      // 하루 3회(시작시각, +6h, +12h) — "날마다 다른 구절"
+}
+
+// MARK: - Notification Manager
 
 final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationManager()
 
+    /// 앱 시작 시 1번만 호출하세요 (App init 등)
     func configure() {
         let center = UNUserNotificationCenter.current()
         center.delegate = self
-        center.requestAuthorization(options: [.alert, .badge, .sound]) { _,_ in }
+        center.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
+
+        // 배너 액션: 열기 / 6시간 뒤 다시 / 완료
+        let open   = UNNotificationAction(identifier: "OPEN_APP",
+                                          title: "열기",
+                                          options: [.foreground])
+        let snooze = UNNotificationAction(identifier: "SNOOZE_6H",
+                                          title: "6시간 뒤 다시")
+        let done   = UNNotificationAction(identifier: "MARK_DONE",
+                                          title: "완료",
+                                          options: [.destructive])
+
+        let category = UNNotificationCategory(
+            identifier: "VERSE_CATEGORY",
+            actions: [open, snooze, done],
+            intentIdentifiers: [],
+            options: []
+        )
+        center.setNotificationCategories([category])
     }
 
-    // 앱이 포그라운드일 때도 배너/사운드/배지 보이기
+    // 포그라운드에서도 배너/사운드/배지 표시
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound, .badge])
     }
 
-    // 매일 특정 시간에 반복 알림
-    func scheduleDaily(hour: Int, minute: Int) {
-        guard (0...23).contains(hour), (0...59).contains(minute) else { return }
-
-        let center = UNUserNotificationCenter.current()
-
-        let content = UNMutableNotificationContent()
-        content.title = "묵상 시간"
-        content.subtitle = "묵상 하실 시간입니다."
-        content.sound = .default
-
-        var comps = DateComponents()
-        comps.hour = hour
-        comps.minute = minute
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
-        let request = UNNotificationRequest(identifier: "daily-\(hour)-\(minute)", content: content, trigger: trigger)
-
-        // 동일 ID로 다시 예약하면 갱신 느낌으로 동작
-        center.add(request, withCompletionHandler: nil)
-    }
-
-    // 1회성(오늘 시간 지나면 내일로 보정)
-    func scheduleOneOff(hour: Int, minute: Int) {
-        guard (0...23).contains(hour), (0...59).contains(minute) else { return }
-
-        let now = Date()
-        var comps = Calendar.current.dateComponents([.year, .month, .day], from: now)
-        comps.hour = hour
-        comps.minute = minute
-
-        var fireDate = Calendar.current.date(from: comps)!
-        if fireDate <= now {
-            fireDate = Calendar.current.date(byAdding: .day, value: 1, to: fireDate)!
+    // 액션 처리 (스누즈/완료)
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let c = response.notification.request.content
+        switch response.actionIdentifier {
+        case "SNOOZE_6H":
+            scheduleOneOff(afterHours: 6,
+                           title: c.title,
+                           body: c.body,
+                           category: c.categoryIdentifier)
+        case "MARK_DONE":
+            center.removeDeliveredNotifications(withIdentifiers: [response.notification.request.identifier])
+        case "OPEN_APP":
+            break
+        default:
+            break
         }
-
-        let match = Calendar.current.dateComponents([.year,.month,.day,.hour,.minute], from: fireDate)
-        let trigger = UNCalendarNotificationTrigger(dateMatching: match, repeats: false)
-
-        let content = UNMutableNotificationContent()
-        content.title = "묵상 시간"
-        content.subtitle = "묵상 하실 시간입니다."
-        content.sound = .default
-
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+        completionHandler()
     }
-    
-    
-    
-    
-    func scheduleDailyForVerse(hour: Int, minute: Int,content:String,address:String) {
-        guard (0...23).contains(hour), (0...59).contains(minute) else { return }
-
-        let center = UNUserNotificationCenter.current()
-
-        let content = UNMutableNotificationContent()
-        content.title = address
-        content.subtitle = "\(content)"
-        content.sound = .default
-
-        var comps = DateComponents()
-        comps.hour = hour
-        comps.minute = minute
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
-        let request = UNNotificationRequest(identifier: "daily-\(hour)-\(minute)", content: content, trigger: trigger)
-
-        // 동일 ID로 다시 예약하면 갱신 느낌으로 동작
-        center.add(request, withCompletionHandler: nil)
-    }
-    
-    
-    
 }
 
-
-
-
-
-
-
-struct ScheduledAlarm: Identifiable {
-    let id: String
-    let title: String
-    let hour: Int?
-    let minute: Int?
-    let repeats: Bool
-}
+// MARK: - Public API
 
 extension NotificationManager {
-    // 현재 예약된(대기중) 알림들을 시간 정보로 변환해서 넘겨줍니다.
+
+    /// 사용하기 쉬운 통합 래퍼
+    /// - dailyOnce: 매일 1회 반복 알림
+    /// - threeTimes6h: 하루 3회(6시간 간격), "매일은 다른 구절"
+    func scheduleReminder(style: ReminderStyle,
+                          startHour: Int,
+                          startMinute: Int,
+                          items: [VerseItem] = []) {
+        switch style {
+        case .dailyOnce:
+            scheduleDaily(hour: startHour, minute: startMinute)
+
+        case .threeTimes6h:
+            // iOS 대기 알림 64개 제한 → 3 * days <= 64  ⇒ days 최대 21 권장
+            let days = min(21, items.count)
+            guard days > 0 else { return }
+            scheduleDaily3x6h_RotatingDays(startHour: startHour,
+                                           startMinute: startMinute,
+                                           days: days,
+                                           dayItems: Array(items.prefix(days)))
+        }
+    }
+
+    /// 매일 1회 반복 알림 (간단 버전)
+    func scheduleDaily(hour: Int,
+                       minute: Int,
+                       title: String = "묵상 시간",
+                       body: String  = "묵상 하실 시간입니다.") {
+        guard (0...23).contains(hour), (0...59).contains(minute) else { return }
+
+        let note = UNMutableNotificationContent()
+        note.title = title
+        note.body  = body
+        note.sound = .default
+
+        var dc = DateComponents(); dc.hour = hour; dc.minute = minute
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dc, repeats: true)
+
+        let id = String(format: "daily-%02d:%02d", hour, minute)
+        let req = UNNotificationRequest(identifier: id, content: note, trigger: trigger)
+        UNUserNotificationCenter.current().add(req)
+    }
+
+    /// ✅ "매일 다른 구절, 하루 3회(시작, +6h, +12h) 같은 구절"로 N일치 예약
+    /// repeats: false로 각 회차를 개별 예약 → 다음 날 다른 구절 가능
+    func scheduleDaily3x6h_RotatingDays(startHour: Int,
+                                        startMinute: Int,
+                                        days: Int,
+                                        dayItems: [VerseItem]) {
+        guard (0...23).contains(startHour), (0...59).contains(startMinute) else { return }
+
+        let maxDays = min(days, 21) // 21일 * 3회 = 63개 (64 제한 보호)
+        let starts = dailyStartSlots(startHour: startHour,
+                                     startMinute: startMinute,
+                                     days: maxDays)
+        let dayCount = min(starts.count, dayItems.count)
+
+        let center = UNUserNotificationCenter.current()
+        let prefix = "verse3x6-"
+        let cal = Calendar.current
+        let now = Date()
+
+        removePending(withPrefix: prefix) { // 이전 같은 접두어 예약 정리
+            for i in 0..<dayCount {
+                let item = dayItems[i]
+                let base = starts[i] // 해당 날짜의 첫 회차(시작시각)
+
+                // 0h, +6h, +12h → 하루 3회(같은 구절)
+                for (slotIdx, offsetH) in [0, 6, 12].enumerated() {
+                    guard let fire = cal.date(byAdding: .hour, value: offsetH, to: base),
+                          fire > now else { continue }
+
+                    let comp = cal.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
+
+                    let note = UNMutableNotificationContent()
+                    note.title = item.title
+                    note.body  = item.body
+                    note.sound = .default
+                    note.categoryIdentifier = "VERSE_CATEGORY"
+
+                    // 고유 ID: verse3x6-YYYYMMDD-HHmm-#1..3
+                    let y = comp.year ?? 0, m = comp.month ?? 0, d = comp.day ?? 0
+                    let hh = comp.hour ?? 0, mm = comp.minute ?? 0
+                    let id = String(format: "\(prefix)%04d%02d%02d-%02d%02d-#%d",
+                                    y, m, d, hh, mm, slotIdx + 1)
+
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: comp, repeats: false)
+                    let req = UNNotificationRequest(identifier: id, content: note, trigger: trigger)
+                    center.add(req)
+                }
+            }
+        }
+    }
+
+    // 목록/취소 유틸 (선택)
     func getPending(completion: @escaping ([ScheduledAlarm]) -> Void) {
-        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-            let alarms: [ScheduledAlarm] = requests.compactMap { req in
-                if let trig = req.trigger as? UNCalendarNotificationTrigger {
-                    let h = trig.dateComponents.hour
-                    let m = trig.dateComponents.minute
+            UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+                let alarms: [ScheduledAlarm] = requests.compactMap { req in
+                    guard let trig = req.trigger as? UNCalendarNotificationTrigger else { return nil }
+                    let dc = trig.dateComponents
                     return ScheduledAlarm(
                         id: req.identifier,
                         title: req.content.title,
-                        hour: h,
-                        minute: m,
-                        repeats: trig.repeats
+                        hour: dc.hour,
+                        minute: dc.minute,
+                        repeats: trig.repeats,
+                        year: dc.year,
+                        month: dc.month,
+                        day: dc.day
                     )
-                } else {
-                    // 시간 트리거가 아닌 경우는 목록에서 제외(필요하면 표시 가능)
-                    return nil
                 }
+                // "가까운 날짜" 기준 정렬 (반복은 날짜 없음 → 뒤로)
+                let sorted = alarms.sorted { a, b in
+                    let ka = (a.year ?? 9999, a.month ?? 99, a.day ?? 99, a.hour ?? 99, a.minute ?? 99)
+                    let kb = (b.year ?? 9999, b.month ?? 99, b.day ?? 99, b.hour ?? 99, b.minute ?? 99)
+                    return ka < kb
+                }
+                DispatchQueue.main.async { completion(sorted) }
             }
-            // 시간순 정렬
-            let sorted = alarms.sorted {
-                ( ($0.hour ?? 0), ($0.minute ?? 0) ) < ( ($1.hour ?? 0), ($1.minute ?? 0) )
-            }
-            DispatchQueue.main.async { completion(sorted) }
+        }
+    
+    
+    func cancel(id: String) {
+        UNUserNotificationCenter.current()
+            .removePendingNotificationRequests(withIdentifiers: [id])
+    }
+
+    func cancelAllPending() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+
+    func clearDelivered() {
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
+}
+
+// MARK: - Private helpers
+
+private extension NotificationManager {
+    /// 스누즈용 1회성 알림
+    func scheduleOneOff(afterHours hours: Int,
+                        title: String,
+                        body: String,
+                        category: String? = nil) {
+        let note = UNMutableNotificationContent()
+        note.title = title
+        note.body  = body
+        note.sound = .default
+        if let category { note.categoryIdentifier = category }
+
+        let ti = max(60, hours * 3600) // 60초 미만 불가
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(ti),
+                                                        repeats: false)
+        let req = UNNotificationRequest(identifier: "snooze-\(UUID().uuidString)",
+                                        content: note,
+                                        trigger: trigger)
+        UNUserNotificationCenter.current().add(req)
+    }
+
+    /// 동일 접두어 예약 전부 제거
+    func removePending(withPrefix prefix: String, completion: (() -> Void)? = nil) {
+        let center = UNUserNotificationCenter.current()
+        center.getPendingNotificationRequests { reqs in
+            let ids = reqs.map(\.identifier).filter { $0.hasPrefix(prefix) }
+            center.removePendingNotificationRequests(withIdentifiers: ids)
+            completion?()
         }
     }
 
-    // 식별자로 개별 취소
-    func cancel(id: String) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
+    /// 오늘(또는 내일)부터 days개의 "하루 기준 시각" 배열 생성
+    func dailyStartSlots(startHour: Int, startMinute: Int, days: Int) -> [Date] {
+        precondition((0...23).contains(startHour) && (0...59).contains(startMinute))
+        let cal = Calendar.current
+        let now = Date()
+
+        var todayDC = cal.dateComponents([.year, .month, .day], from: now)
+        todayDC.hour = startHour
+        todayDC.minute = startMinute
+        todayDC.second = 0
+        let todayStart = cal.date(from: todayDC)!
+
+        // 이미 지난 시각이면 내일부터 시작
+        let firstStart = (todayStart <= now)
+            ? cal.date(byAdding: .day, value: 1, to: todayStart)!
+            : todayStart
+
+        return (0..<days).compactMap { cal.date(byAdding: .day, value: $0, to: firstStart) }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

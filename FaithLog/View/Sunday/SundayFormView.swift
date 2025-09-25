@@ -18,6 +18,11 @@ struct SundayFormView: View {
     @StateObject private var askAi = AskAI()
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) var dismiss
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
     
     var body: some View {
         VStack{

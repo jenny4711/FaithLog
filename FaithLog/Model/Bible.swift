@@ -16,9 +16,9 @@ struct Bible:Codable,Identifiable,Hashable{
     let pg:Int
     let version:String
     let initial :String
-    
+    let enTitle:String
     private enum CodingKeys: String, CodingKey {
-        case title, label, value, pg, version, initial
+        case title, label, value, pg, version, initial,enTitle
         // id는 제외 - JSON에 없으므로
     }
 }

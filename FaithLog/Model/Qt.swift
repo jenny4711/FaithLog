@@ -17,7 +17,9 @@ class Qt{
     var address:String = ""
     var bible:String = ""
     var date:Date = Date()
+ 
     @Relationship(deleteRule: .cascade) var content: [BibleBK] = []
+   
     
     init(){
         id = UUID().uuidString
