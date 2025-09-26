@@ -15,6 +15,7 @@ struct BibleFormView: View {
     @State var aiResult:String = ""
     @State var chapter: Int = 1
     @State private var verses: [String] = []
+//    @Binding var showBibleForm:Bool
    
     @AppStorage("seleLang") private var seleLang:String = "KR"
 
@@ -31,6 +32,7 @@ struct BibleFormView: View {
             HStack{
                 Spacer()
                                 Button(action: {
+                                  
                     Task{
                         
                         
@@ -39,6 +41,7 @@ struct BibleFormView: View {
                          
                        
                             openResult = true
+                        
                             
                         
                         
@@ -116,9 +119,9 @@ struct BibleFormView: View {
 }
 
 
-#Preview {
-    @Previewable @State var openBibleForm:Bool = true
-    let dataService = DataService()
-    BibleFormView()
-        .environment(dataService)
-}
+//#Preview {
+//    @Previewable @State var openBibleForm:Bool = true
+//    let dataService = DataService()
+//    BibleFormView()
+//        .environment(dataService)
+//}

@@ -16,6 +16,12 @@ struct QtDetail: View {
     @State var edAppl:String = ""
     @State  var edPray:String = ""
     @State var edTitle:String = ""
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
+    
     
     // 첫 번째 숫자를 추출하는 헬퍼 함수
     private func extractFirstNumber(from text: String) -> Int {
@@ -114,42 +120,48 @@ struct QtDetail: View {
              
              
                 // MARK: - bible content
-               HStack {
-                    Text("성경 구절")
-                        .font(Font.heavy25)
-                   Spacer()
+                if lang {
+                    HStack {
+                         Text("성경 구절")
+                             .font(Font.heavy25)
+                        Spacer()
+                     }
+                    
+                     ScrollView{
+                         VStack(alignment:.leading){
+                             
+                             ForEach((item?.content ?? []).sorted { first, second in
+                                 // "17 훈계를 지키는 사람은..." 형태에서 첫 번째 숫자를 추출하여 정렬
+                                 let firstContent = first.content
+                                 let secondContent = second.content
+                                 
+                                 // 첫 번째 숫자를 찾아서 정렬
+                                 let firstNumber = extractFirstNumber(from: firstContent)
+                                 let secondNumber = extractFirstNumber(from: secondContent)
+                                 
+                                 return firstNumber < secondNumber
+                             }, id: \.id) { c in
+                                 Text("\(c.content)")
+                                     .padding(.bottom,10)
+                             }
+                             .padding(.vertical,5)
+                         }
+                         
+                         
+                         
+                         
+                         
+                         
+                     }//:ScrollView(BIBLE CONTENT)
+                     .frame(maxHeight:300)
+                     .padding()
+                     .padding(.vertical,10)
+                     .scrollIndicators(.hidden)
+                    
+                }else {
+                    EmptyView()
                 }
-               
-                ScrollView{
-                    VStack(alignment:.leading){
-                        
-                        ForEach((item?.content ?? []).sorted { first, second in
-                            // "17 훈계를 지키는 사람은..." 형태에서 첫 번째 숫자를 추출하여 정렬
-                            let firstContent = first.content
-                            let secondContent = second.content
-                            
-                            // 첫 번째 숫자를 찾아서 정렬
-                            let firstNumber = extractFirstNumber(from: firstContent)
-                            let secondNumber = extractFirstNumber(from: secondContent)
-                            
-                            return firstNumber < secondNumber
-                        }, id: \.id) { c in
-                            Text("\(c.content)")
-                                .padding(.bottom,10)
-                        }
-                        .padding(.vertical,5)
-                    }
-                    
-                    
-                    
-                    
-                    
-                    
-                }//:ScrollView(BIBLE CONTENT)
-                .frame(maxHeight:300)
-                .padding()
-                .padding(.vertical,10)
-                .scrollIndicators(.hidden)
+            
                 
                 
                 

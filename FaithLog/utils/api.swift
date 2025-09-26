@@ -54,6 +54,7 @@ class DataService {
                 let body   = ns.substring(with: m.range(at: 2)).trimmingCharacters(in: .whitespacesAndNewlines)
                 if let n = Int(numStr) {
                     result.append(EnVerse(number: n, content: body))
+                    print("n:\(n),content:\(body)")
                 }
             }
 

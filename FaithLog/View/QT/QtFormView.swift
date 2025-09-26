@@ -48,11 +48,26 @@ struct QtFormView: View {
                         if !api.selectedBible.isEmpty {
                             let firstVerse = api.selectedBible[0]
                             let lastVerse = api.selectedBible.last!
+                            
                             item.bible = firstVerse.title
                             item.address = "\(firstVerse.title) \(firstVerse.chapter)장 \(firstVerse.verse)절-\(lastVerse.verse)절"
-                        } else {
+                        }else if !api.selectedBibleEn.isEmpty{
+                            let firstVerse = api.selectedBibleEn[0]
+                            let lastVerse = api.selectedBibleEn.last!
+                            let stringCh = String(api.ch ?? 1)
+                       
+                            item.bible = api.enTitle ?? ""
+                            item.address = "\(api.enTitle ?? "") \(stringCh) \(firstVerse.number)-\(lastVerse.number)"
+                        }
+                        
+                        
+                        else {
                             item.address = "선택된 성경 구절 없음"
                         }
+                        
+                        
+                        
+                        
                         
                         context.insert(item)
                         api.selectedBible = []
