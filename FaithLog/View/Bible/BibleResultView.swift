@@ -107,7 +107,6 @@ struct BibleResultEn: View {
                 let chapter = api.ch ?? 0
                 let chapterString = String(chapter)
                 let verseString = String(verseNumber)
-//                let isSelected = api.selectedBible.contains { Int($0.verse) == verseNumber }
                 let isSelected = api.selectedBibleEn.contains { $0.content == v.content  }
                 let title = api.enTitle ?? ""
                 let isFaved = favVerses.contains { $0.verse == verseString && $0.chapter == chapterString && $0.title == title }
@@ -166,6 +165,13 @@ struct BibleResultEn: View {
                 )
                 .padding(10)
             }
+            VStack(alignment:.center){
+                Text("Scripture quotations are taken from the Holy Bible, New Living Translation, copyright ©1996,")
+                Text("2004, 2015 by Tyndale House Foundation. Used by permission of Tyndale House Publishers, Carol")
+                Text("Stream, Illinois 60188. All rights reserved.")
+            }
+            .font(Font.light15)
+            .padding(.horizontal,16)
         }
         
         .padding(10)
@@ -301,9 +307,4 @@ struct BibeResultKR: View {
     }
 }
 
-//#Preview {
-//    let dataService = DataService()
-//    dataService.bible = [BibleBK(title: "이사야서", lang: "kor", chapter: "4", verse: "1", content: "테스트 내용")]
-//    BibleResultView()
-//        .environment(dataService)
-//}
+

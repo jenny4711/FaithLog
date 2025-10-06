@@ -162,9 +162,9 @@ func nltHTMLToVerseArray(_ html: String) -> [String] {
         return out
     }
 
-    // 3) 폴백: 평문화 후 숫자 경계로 자르기 (절번호 뒤에 공백이 없어도 잡도록)
+
     var plain = stripTagsAndCollapse(html)
-    // 절번호 탐지: 앞은 단어 문자가 아니고(lookbehind), 숫자 뒤엔 "다음 문자가 숫자가 아님"
+
     let re = try! NSRegularExpression(pattern: #"(?<![\w*:\-])([1-9]\d{0,2})(?=[^\d])"#)
     let ns2 = plain as NSString
     let ms = re.matches(in: plain, range: NSRange(location: 0, length: ns2.length))
@@ -174,7 +174,7 @@ func nltHTMLToVerseArray(_ html: String) -> [String] {
     var last = 0
     for m in ms {
         let n = Int(ns2.substring(with: m.range(at: 1))) ?? 0
-        if n > last { // 건너뛰기 허용(1,2,4,5…)
+        if n > last {
             starts.append((n, m.range.location))
             last = n
         }

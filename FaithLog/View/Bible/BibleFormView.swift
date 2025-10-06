@@ -24,7 +24,6 @@ struct BibleFormView: View {
     }
     
     
-//   @StateObject private  var askAI = AskAI()
   
     var body: some View {
         VStack{
@@ -118,10 +117,3 @@ struct BibleFormView: View {
     }
 }
 
-
-//#Preview {
-//    @Previewable @State var openBibleForm:Bool = true
-//    let dataService = DataService()
-//    BibleFormView()
-//        .environment(dataService)
-//}

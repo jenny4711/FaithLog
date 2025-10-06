@@ -21,10 +21,6 @@ class AskAI: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var geminiResponse: String?
     @Published var showAISummery: Bool = false
-    
-    
- 
-
 
     func recognizeText(from uiImage: UIImage, completion: @escaping (String) -> Void) {
         let request = VNRecognizeTextRequest { req, _ in

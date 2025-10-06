@@ -27,7 +27,7 @@ struct SundayFormView: View {
     var body: some View {
         VStack{
             HStack{
-                Spacer()
+               Spacer()
                 Button(action: {
                     let item = Sunday()
                     item.title = title
@@ -43,6 +43,14 @@ struct SundayFormView: View {
                 }
             }
             .padding(.top,24)
+            Button(action: {
+                dismiss()
+            }) {
+                Image("logo")
+                    .padding(.vertical, 15)
+            }
+            
+          
             
             VStack {
                 
@@ -142,7 +150,7 @@ struct SundayFormView: View {
                             askAi.isLoading = true
                         }
                         
-                        // ✅ async/await로 한 줄
+                       
                         let note = await askAi.recognizeTextAsync(from: data)
                         await MainActor.run {
                             newSunday.note = note

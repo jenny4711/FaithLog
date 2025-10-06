@@ -9,11 +9,6 @@ import SwiftUI
 import UserNotifications
 
 
-
-
-
-
-
 struct ContentView: View {
 
    
@@ -21,9 +16,6 @@ struct ContentView: View {
         Onboarding()
     }
 }
-
-
-
 
 
 #Preview {

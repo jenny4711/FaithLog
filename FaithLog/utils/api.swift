@@ -63,15 +63,10 @@ class DataService {
             self.bibleEnParsed = result
         }
     
-    
-    
-    
+
 
     // MARK: - Favorites verse btn func
     
-    
-    
-   
 
 
 func saveFavVerse(_ verse:String){
@@ -87,9 +82,6 @@ func saveFavVerse(_ verse:String){
             }
         }
     }
-
-
-
 
 
     //MARK: - Bible Verse
@@ -111,11 +103,7 @@ func saveFavVerse(_ verse:String){
                }
            }
         
-        
-        
-        
-        
-        
+
         
        }
     
@@ -175,17 +163,9 @@ func saveFavVerse(_ verse:String){
                 
             }//:withTaskGroup
         }else{
-            print("HERE!AI")
+    
             await self.performRequestEn(with:urlStringAi)
-            print("AFTER performRequestEn")
-            
-//            await withTaskGroup(of:Void.self){ group in
-//                group.addTask{
-//                    await self.performRequestEn(with:urlStringAi)
-//                    print("group AI")
-//                }
-//            }
-            
+
             do {
                 
                 let html = try await fetchNLTChapter(book: enTitle, chapter: Int(chapter)!)
@@ -200,13 +180,6 @@ func saveFavVerse(_ verse:String){
             
         }
         
-      
-        
-       
-
-
-        
-       
     }
     
     
@@ -223,7 +196,6 @@ func saveFavVerse(_ verse:String){
             if let bibleList = parseJSON(data) {
                 print("bibleList:--------\(bibleList)")
                 await MainActor.run {
-                    print("🔢 Before sorting: \(bibleList.map { $0.verse })")
                     let shortredBible = bibleList.sorted{ first, second in
                         let firstVerse = Int(first.verse) ?? 0
                         let secondVerse = Int(second.verse) ?? 0
@@ -256,12 +228,12 @@ func saveFavVerse(_ verse:String){
         
         // 실제 JSON 응답 확인
         if let jsonString = String(data: data, encoding: .utf8) {
-            print("🔍 Raw JSON response: \(jsonString)")
+       
         }
         
         do {
             let decoded = try decoder.decode(BibleResponse.self, from: data)
-            print("✅ Successfully decoded: \(decoded.resp) verses!!!!!!!!!!!!")
+        
             return decoded.result
         } catch let DecodingError.keyNotFound(key, context) {
             print("❌ Key not found: \(key) at \(context.codingPath)")
@@ -274,34 +246,6 @@ func saveFavVerse(_ verse:String){
     }
     
     
-    
-//    func performRequestEn(with urlString: String) async {
-//        guard let url = URL(string: urlString) else {
-//            print("Invalid URL")
-//            return
-//        }
-//        
-//        do {
-//            let (data, _) = try await URLSession.shared.data(from: url)
-//            print("dataResp:\(data)")
-//            
-//
-//            
-//             // MARK: - RESP
-//            
-//            if let resp = parseJSONresp(data){
-//                await MainActor.run{
-//                    self.bibleResp = resp
-//                }
-//            }
-//            
-//        } catch {
-//            print("Network error: \(error)")
-//            await MainActor.run {
-//                self.errorMsg = error.localizedDescription
-//            }
-//        }
-//    }
     
     
     
@@ -318,10 +262,10 @@ func saveFavVerse(_ verse:String){
     func performRequestEn(with urlString: String) async {
         guard let url = URL(string: urlString) else {
             self.errorMsg = "Invalid URL: \(urlString)"
-            print("❌ Invalid URL:", urlString)
+       
             return
         }
-        print("🔗 AI URL:", url.absoluteString)
+    
 
         var request = URLRequest(url: url)
         request.timeoutInterval = 20
@@ -334,30 +278,24 @@ func saveFavVerse(_ verse:String){
                 print("❌ No HTTPURLResponse")
                 return
             }
-            print("📡 HTTP status:", http.statusCode)
 
             let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
-            print("🧾 Raw body:", body)   // ✅ DEBUG 가드 없이 항상
+           
 
             guard (200...299).contains(http.statusCode) else {
                 self.errorMsg = "HTTP \(http.statusCode): \(body)"
                 return
             }
 
-            // 일단 원문 텍스트가 뭔지 바로 확인
-            // (임시) 서버가 {"resp":"..."}가 아닐 수 있으니 원문을 그대로 표시해 봅니다.
-            // 확인 후 아래 디코드로 되돌리면 됩니다.
-            // self.bibleResp = body
-
-            // 실제가 {"resp":"..."}면 이걸 사용
+        
             struct AiResponse: Decodable { let resp: String }
             do {
                 let decoded = try JSONDecoder().decode(AiResponse.self, from: data)
                 self.bibleResp = decoded.resp
                 self.errorMsg = nil
-                print("✅ Decoded resp length:", decoded.resp.count)
+          
             } catch {
-                // 키 불일치 가능성—원문을 먼저 UI에서 확인해보자
+             
                 self.bibleResp = body
                 self.errorMsg = "Decode fallback (check JSON shape)."
                 print("⚠️ Decode failed, fell back to raw body. error:", error)
@@ -370,67 +308,11 @@ func saveFavVerse(_ verse:String){
     }
 
     
-    
-    
-    
 
-//    func performRequestEn(with urlString: String) async {
-//        // 1) URL 검증
-//        guard let url = URL(string: urlString) else {
-//            await MainActor.run { setError("Invalid URL: \(urlString)") }
-//            return
-//        }
-//
-//        // 2) 요청 (타임아웃 구성 예시)
-//        var request = URLRequest(url: url)
-//        request.timeoutInterval = 20 // 초
-//
-//        do {
-//            let (data, response) = try await URLSession.shared.data(for: request)
-//
-//            // 3) HTTP 상태 코드 체크
-//            guard let http = response as? HTTPURLResponse else {
-//                await MainActor.run { setError("No HTTPURLResponse") }
-//                return
-//            }
-//            guard (200...299).contains(http.statusCode) else {
-//                let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
-//                await MainActor.run { setError("HTTP \(http.statusCode): \(body)") }
-//                return
-//            }
-//
-//            // 4) 로깅(디버그 시에만)
-//            #if DEBUG
-//            if let jsonString = String(data: data, encoding: .utf8) {
-//                print("🔍 EN AI Raw JSON:", jsonString)
-//            }
-//            #endif
-//
-//            // 5) 디코드 (이 엔드포인트는 { resp: String } 가정)
-//            let decoded = try JSONDecoder().decode(AiResponse.self, from: data)
-//
-//            // 6) UI 업데이트는 MainActor에서
-//            await MainActor.run {
-//                self.bibleResp = decoded.resp
-//                self.errorMsg = nil
-//            }
-//
-//        } catch {
-//            await MainActor.run {
-//                setError("Network/Decode error: \(error.localizedDescription)")
-//            }
-//        }
-//    }
-//-----------------
-    
-    
-    
-    
     
     func parseJSONresp(_ data: Data) -> String? {
         let decoder = JSONDecoder()
         
-        // 실제 JSON 응답 확인
         if let jsonString = String(data: data, encoding: .utf8) {
             print("🔍 Raw JSON response: \(jsonString)")
         }

@@ -18,6 +18,7 @@ extension Font{
     static var reg18 = Font.system(size:18)
     static var bold15 = Font.system(size:15,weight:.bold)
     static var reg12 = Font.system(size:12)
+    static var light15 = Font.system(size:15,weight: .light)
   
     
 }

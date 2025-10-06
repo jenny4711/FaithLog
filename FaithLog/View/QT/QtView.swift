@@ -451,10 +451,6 @@ struct PlusBtnView: View {
 
 
 
-
-
-
-
 #Preview {
     QtView()
 }

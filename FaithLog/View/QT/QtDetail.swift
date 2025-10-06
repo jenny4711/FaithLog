@@ -248,11 +248,6 @@ struct QtDetail: View {
 }
 
 
-
-
-
-
-
 #Preview {
     QtDetail(edMedit:"" , edAppl: "", edPray: "")
 }

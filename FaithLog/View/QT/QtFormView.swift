@@ -32,6 +32,9 @@ struct QtFormView: View {
             
              // MARK: - 성경보기 버튼
             VStack(spacing:16) {
+                
+              
+                
                 HStack{
                     Spacer()
                     Button(action: {
@@ -79,6 +82,20 @@ struct QtFormView: View {
                     }
                 }
                 .padding(.horizontal,24)
+                
+                
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image("logo")
+                        .padding(.bottom, 10)
+                }
+                
+                
+                
+                
+                
+                
                 ScrollView{
                     Button(action: {
                         openBibleForm = true
@@ -92,7 +109,7 @@ struct QtFormView: View {
                                     .foregroundColor(Color.colorBackground)
                             }
                     }//:BUTTON
-                    
+                    .padding(.vertical,10)
                     
                     
                     // MARK: - 타이틀(title)

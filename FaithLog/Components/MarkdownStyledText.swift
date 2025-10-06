@@ -20,14 +20,12 @@ struct MarkdownStyledText: View {
             let trimmed = rawLine.trimmingCharacters(in: .whitespaces)
 
             if let numbered = splitNumberedLine(trimmed) {
-                // numbered.numberToken + titled / desc 처리
-                // 1) 제목 줄 (Bold + 위 여백 10)
                 var titleLine = AttributedString(numbered.numberToken + " " + numbered.title)
                 titleLine.font = .system(size: 16, weight: .bold)
                 
                 result.append(titleLine)
 
-                // 2) 설명이 있으면 다음 줄에 일반체로
+                //  설명이 있으면 다음 줄에 일반체로
                 if let desc = numbered.desc, !desc.isEmpty {
                     result.append(AttributedString("\n"))
                     var bodyLine = AttributedString(desc)

@@ -6,27 +6,19 @@
 //
 
 
-//
-//  NotificationManager.swift
-//  FaithLog
-//
-//
-//  NotificationManager.swift
-//  FaithLog
-//
 
 import Foundation
 import UserNotifications
 
 // MARK: - Models
 
-/// 알림에 들어갈 데이터(제목/본문)
+
 public struct VerseItem {
     public let title: String   // 예: "잠언 12장"
     public let body: String    // 예: 구절 내용
 }
 
-/// 예약된(대기중) 알림을 앱에서 보여줄 때 쓰는 모델 (선택)
+
 public struct ScheduledAlarm: Identifiable {
     public let id: String
     public let title: String
@@ -38,7 +30,7 @@ public struct ScheduledAlarm: Identifiable {
         let day: Int?
 }
 
-// 알림 스타일 선택지
+
 public enum ReminderStyle {
     case dailyOnce         // 매일 1회(반복)
     case threeTimes6h      // 하루 3회(시작시각, +6h, +12h) — "날마다 다른 구절"
@@ -74,14 +66,14 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         center.setNotificationCategories([category])
     }
 
-    // 포그라운드에서도 배너/사운드/배지 표시
+
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound, .badge])
     }
 
-    // 액션 처리 (스누즈/완료)
+
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
@@ -107,9 +99,7 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
 extension NotificationManager {
 
-    /// 사용하기 쉬운 통합 래퍼
-    /// - dailyOnce: 매일 1회 반복 알림
-    /// - threeTimes6h: 하루 3회(6시간 간격), "매일은 다른 구절"
+ 
     func scheduleReminder(style: ReminderStyle,
                           startHour: Int,
                           startMinute: Int,
@@ -119,7 +109,7 @@ extension NotificationManager {
             scheduleDaily(hour: startHour, minute: startMinute)
 
         case .threeTimes6h:
-            // iOS 대기 알림 64개 제한 → 3 * days <= 64  ⇒ days 최대 21 권장
+       
             let days = min(21, items.count)
             guard days > 0 else { return }
             scheduleDaily3x6h_RotatingDays(startHour: startHour,
@@ -129,7 +119,7 @@ extension NotificationManager {
         }
     }
 
-    /// 매일 1회 반복 알림 (간단 버전)
+  
     func scheduleDaily(hour: Int,
                        minute: Int,
                        title: String = "묵상 시간",
@@ -149,8 +139,7 @@ extension NotificationManager {
         UNUserNotificationCenter.current().add(req)
     }
 
-    /// ✅ "매일 다른 구절, 하루 3회(시작, +6h, +12h) 같은 구절"로 N일치 예약
-    /// repeats: false로 각 회차를 개별 예약 → 다음 날 다른 구절 가능
+
     func scheduleDaily3x6h_RotatingDays(startHour: Int,
                                         startMinute: Int,
                                         days: Int,
