@@ -319,7 +319,7 @@ func saveFavVerse(_ verse:String){
         
         do {
             let decoded = try decoder.decode(BibleResponse.self, from: data)
-           
+            print("decode:\(decoded.resp)")
             return decoded.resp
         } catch let DecodingError.keyNotFound(key, context) {
             print("❌ Key not found: \(key) at \(context.codingPath)")

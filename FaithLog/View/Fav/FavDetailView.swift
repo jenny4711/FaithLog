@@ -85,12 +85,20 @@ struct FavDetailView: View {
                     case .showing:
                         // 현재 문단만 10초 공개
                         VStack( spacing: 8) {
-                            Text(target)
-                                .font(.body)
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(12)
+                            ZStack{
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color.customText)
+                                    .frame(height:150)
+                                Text(target)
+                                    .font(Font.reg18)
+                                    .padding()
+                                    .foregroundColor(Color.customBackground)
+                                    .cornerRadius(12)
+                            }
+                            .frame(maxWidth:640,minHeight: 150)
+                            .padding()
+                            
+                            
                             HStack{
                                 Text("남은 시간: \(secondsLeft)초")
                                     .foregroundColor(.secondary)
@@ -108,68 +116,78 @@ struct FavDetailView: View {
                         
                     case .typing:
                         VStack(alignment: .leading, spacing: 10) {
-                            // 필요하면 힌트(글자 수 등)
-                            // Text("힌트: \(target.count)자").foregroundColor(.secondary)
+                                                    // 필요하면 힌트(글자 수 등)
+                                                    // Text("힌트: \(target.count)자").foregroundColor(.secondary)
+                            HStack{
+                                TextField("여기에 문단을 그대로 타이핑하세요", text: $typing,axis:.vertical)
+                                   
+//                                                        .textFieldStyle(.roundedBorder)
+                                    .textInputAutocapitalization(.never)
+                                    .lineLimit(3)
+                                    .autocorrectionDisabled(true)
+//
+                                   .frame(height:150)
+                                    .padding(.horizontal,16)
+                            }
                             
-                            TextField("여기에 문단을 그대로 타이핑하세요", text: $typing,axis:.vertical)
-                                .textFieldStyle(.roundedBorder)
-                                .textInputAutocapitalization(.never)
-                                .lineLimit(3)
-                                .autocorrectionDisabled(true)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(wrongTry ? Color.red : Color.clear, lineWidth: 1)
-                                )
-                                .padding(.horizontal,16)
-                            
-                            HStack {
-                                Button("확인") { checkAnswer() }
-                                    .buttonStyle(.borderedProminent)
-                                
-                                Button("초기화") {
-                                    typing = ""
-                                    wrongTry = false
-                                }
-                                .buttonStyle(.bordered)
-                                
-                                Button("다시 보기(20초)") {
-                                        secondsLeft = 20
-                                        withAnimation { phase = .showing }
-                                                }
-                                    .buttonStyle(.bordered)
-                            }//:HSTACk(btns)
-                            .padding(.horizontal,16)
-                            
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(wrongTry ? Color.red : Color.clear, lineWidth: 1)
+                                    .fill(Color.white)
+                            )
+                                                    
+                                                    HStack {
+                                                        Button("확인") { checkAnswer() }
+                                                            .buttonStyle(.bordered)
+                                                            .background(Color.customText)
+                                                            .cornerRadius(10)
+                                                            .foregroundColor(Color.customBackground)
+                                                           
+                                                        Button("초기화") {
+                                                            typing = ""
+                                                            wrongTry = false
+                                                        }
+                                                        .buttonStyle(.bordered)
+                                                        
+                                                        Button("다시 보기(20초)") {
+                                                                secondsLeft = 20
+                                                                withAnimation { phase = .showing }
+                                                                        }
+                                                            .buttonStyle(.bordered)
+                                                    }//:HSTACk(btns)
+                                                    .padding(.horizontal,16)
+                                                    
 
-                            
-                        }//:VSTACK
-                        .padding(.horizontal,16)
+                                                    
+                                                }//:VSTACK
+                                                .padding(.horizontal,16)
                         
                         
                     case .done:
-                        VStack{
-                            
-                            Text("완료! 모든 문단을 맞췄어요 🎉")
-                                .font(.headline)
-                                .foregroundColor(.green)
-                                .padding(.bottom,50)
-                            HStack{
-                                Text(fav.title)
-                                Text("\(fav.chapter)장 \(fav.verse)절")
-                            }
-                            
-                            
-                            VStack{
-                               
-                                ForEach(parts,id:\.self){
-                                    item in
-                                    Text("\(item)")
-                                }
-                                Spacer()
-                            }
-                           
-                            
-                        }
+                        FavDoneView(fav: fav, parts: parts)
+//                        VStack{
+//                            
+//                            Text("완료! 모든 문단을 맞췄어요 🎉")
+//                                .font(.headline)
+//                                .foregroundColor(.green)
+//                                .padding(.bottom,50)
+//                            HStack{
+//                                Text(fav.title)
+//                                Text("\(fav.chapter)장 \(fav.verse)절")
+//                            }
+//                            
+//                            
+//                            VStack{
+//                               
+//                                ForEach(parts,id:\.self){
+//                                    item in
+//                                    Text("\(item)")
+//                                }
+//                                Spacer()
+//                            }
+//                           
+//                            
+//                        }
                         
                         
                         
