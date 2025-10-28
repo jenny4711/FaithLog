@@ -11,13 +11,23 @@ struct QtView: View {
     @State var openForm:Bool = false
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) var dismiss
+    @Environment(DataService.self) var api
     @Query(sort:\Qt.date,order:.reverse) private var Qts:[Qt]
     @State private var setAlarm:Bool = false
     @State private var isAnimated:Bool = false
     @State private var hr:Int = 9
     @State private var m:Int = 30
-    
-    
+    @State private var isExpanded = false
+    @State private var openRecomQT = false
+    @State private var selectedEmotion: String? = nil
+    let emotions = ["행복","슬픔","우울","두려움","감사"]
+    let emotionsEn = ["Happy", "Sad", "Depressed", "Afraid","Thankful"];
+
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
     var body: some View {
         NavigationStack {
             ZStack {
@@ -32,11 +42,28 @@ struct QtView: View {
                             dismiss()
                         }) {
                             Image(systemName: "chevron.backward")
+                                .font(Font.reg18)
                                 .tint(Color.customText)
                         }
+                        .padding(10)
+                        .clipShape(.circle)
+                        .modifier(GlassEffectBtnModifier())
+                        
+                        
+                        
                         Spacer()
+                        HStack{
+                            Text(lang ? "감정" : "Mood")
+                                .font(Font.reg18)
+                        }
+                        .padding(10)
+                        .clipShape(.capsule)
+                        .modifier(GlassEffectBtnModifier())
+                            .onTapGesture {
+                                withAnimation(.spring()) { isExpanded.toggle() }
+                            }
                     }
-                    .padding(.leading, 16)
+                    .padding(.horizontal, 16)
                     
                     VStack {
                         Button(action: {
@@ -46,25 +73,71 @@ struct QtView: View {
                                 .padding(.bottom, 20)
                         }
 //                        ----------------------
+                        
+                       
+
+                       
+                        
+                        
+                        
+                        
                         HStack{
-                            Text("Qt List")
+                            Text(lang ? "묵상 리스트": "Qt List")
                                 .font(Font.heavy25)
                                 .foregroundColor(Color.customText)
-                            Button(action: {
-                                openForm = true
-                            }) {
-                                
-                                  
+
+                                Button(action: {
+                                    openForm = true
+                                }) {
+                                    
+                                    
                                     
                                     Image(systemName: "plus")
-                                    .font(Font.semi20)
+                                        .font(Font.semi20)
                                         .foregroundColor(Color.customText)
-                                        
-                                
-                            }
+                                        .padding(.all,5)
+                                    
+                                }
+                                .modifier(GlassEffectBtnModifier())
+                               
+
                             
                         }
                         //--------------------------------
+                        
+                        HStack {
+                           
+
+                            if isExpanded {
+                                HStack(spacing: 8) {
+                                    ForEach(lang ? emotions : emotionsEn, id: \.self) { e in
+                                        Text(e)
+                                            .padding(.vertical, 6).padding(.horizontal, 5)
+                                            .background(
+                                                Capsule()
+                                                    .fill(selectedEmotion == e ? Color.customText.opacity(0.2) : .clear)
+                                            )
+                                            .onTapGesture {
+                                                selectedEmotion = e
+                                                Task {
+                                                    await api.getEmotionQt(e, lang: lang, content: e)
+                                                
+                                                }
+                                                isExpanded = false
+                                                openRecomQT = true
+                                            }
+                                    }
+                                }
+                                .padding(8)
+                                .modifier(defaultGlassEffect()) // 이제 HStack(한 덩어리)에 적용
+                                .transition(.opacity.combined(with: .move(edge: .top)))
+                            }
+                        }
+                        .padding(.vertical,15)
+                        
+                        
+                        
+                        
                         
                     } //:VSTACK(logo and title)
                     
@@ -81,8 +154,10 @@ struct QtView: View {
                                     context.delete(item)
                                 }) {
                                     Image(systemName: "trash")
+
                                 }
-                                .tint(Color.customBackground)
+                                .tint(Color.red)
+                                
                             }
                             .listRowBackground(Color.customBackground)
                             .listRowSeparator(.hidden)
@@ -109,27 +184,33 @@ struct QtView: View {
 //                        PlusBtnView(openForm: $openForm)
                         HStack{
                             Spacer()
-                            Button(action: {
-                                setAlarm = true
-                                
 
-                            }) {
-                                ZStack{
+                                Button(action: {
+                                    setAlarm = true
                                     
-                                    Circle()
-                                        .frame(width: 60,height:60)
-                                        .tint(Color.customText)
-                                    Image(systemName: "bell")
-                                        .resizable()
-                                        .frame(width:24,height:24)
-                                        .foregroundColor(Color.customBackground)
                                     
-                                }
-                            }//:Button
+                                }) {
+                                    ZStack{
+                                        
+                                        Circle()
+                                            .frame(width: 60,height:60)
+                                         
+                                        
+                                        Image(systemName: "bell")
+                                            .resizable()
+                                            .frame(width:24,height:24)
+                                            .foregroundColor(Color.customBackground)
+
+                                    }
+                                }//:Button
+//                                .modifier(defaultGlassEffect())
+                                .modifier(GlassEffectBtnModifier())
+                              
+
                         }
                         .padding(.horizontal,16)
                     }
-                    .padding(.trailing, 24)
+                    .padding(.trailing, 16)
                     .padding(.bottom, 24)
                 }
             } //:ZSTACK
@@ -140,7 +221,30 @@ struct QtView: View {
                 TimePicker(hr: $hr, m: $m ,setAlerm:$setAlarm)
                     .presentationDetents([.fraction(0.8)])
             }
-           
+            .sheet(isPresented:$openRecomQT){
+                VStack{
+                    Text(lang ? "묵상 추천" : "Meditation Suggestions")
+                        .font(Font.heavy25)
+                        .padding(.bottom,10)
+                    Spacer()
+                    ScrollView{
+                        if api.recomQt == ""{
+                            LoadingDemoView()
+                        }else{
+                            Text(api.recomQt)
+                                .font(Font.reg18)
+                                .lineSpacing(15)
+                        }
+                       
+                    }
+                  
+                       
+                }
+                .padding(.horizontal,24)
+                .padding(.top,24)
+                
+                .presentationDetents([.fraction(0.3)])
+            }
             
 
         }//:NAVIGATIONSTACK
@@ -158,7 +262,11 @@ struct TimePicker: View {
     @State private var alarms: [ScheduledAlarm] = []
     @State private var groups: [TimeGroup] = []   // ★ 추가: 그룹 상태
     @State private var isLoading = false
-  
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
 
 
     var body: some View {
@@ -172,30 +280,49 @@ struct TimePicker: View {
                     reload()
                     setAlerm = false
                 } label: {
-                    Text("DONE").foregroundColor(.black)
+                    Text(lang ? "저장" :"DONE").foregroundColor(Color.customText)
                 }
             }
-            .padding(.trailing, 16)
+            .padding(.trailing,24)
             .padding(.top, 16)
+            
+            HStack{
+                Text(lang ?"선택된 시간:" : "Selected Time")
+                    .font(Font.reg18)
+                    .foregroundColor(Color.customText)
+                    .padding(.top, 16)
+                Text(String(format: "%02d:%02d", hr, m))
+                    .font(Font.black36)
+                    .foregroundColor(Color.customText)
+                    .padding(.top, 16)
+            }
 
-            Text(String(format: "시간: %02d:%02d", hr, m))
-                .font(Font.med20)
-                .padding(.top, 16)
+           
+            
+            if lang{
+                Text("마음이 분주해질수록 리듬이 필요합니다. 같은 시간에 울리는 작은 알림이, 오늘도 말씀 앞에 천천히 서도록 이끌어 줍니다.")
+                    .modifier(IntroTextModifier())
+            }else{
+                Text("When life feels busy, rhythm helps. A small, daily chime at the same time invites you to slow down and meet the Word again.")
+                    .modifier(IntroTextModifier())
+            }
 
             HStack{
                             VStack{
                                 Text("Hour")
                                     .font(Font.semi20)
+                                    .foregroundColor(Color.customText)
                                 HStack {
                                     Picker("Hr", selection: $hr) {
                                         ForEach(0..<24) { h in
                                             Text(String(format: "%02d", h)).tag(h)
                                                 .font(.system(size: 30))
+                                                .foregroundColor(Color.customText)
             
                                         }
                                     }
                                     .pickerStyle(.wheel)
-                                    .colorScheme(.light)
+//                                    .colorScheme(.light)
             
                             }
                             }
@@ -206,31 +333,35 @@ struct TimePicker: View {
                             VStack{
                                 Text("Minutes")
                                     .font(Font.semi20)
+                                    .foregroundColor(Color.customText)
                                 Picker("Min", selection: $m) {
                                     ForEach(0..<60) { mm in
                                         Text(String(format: "%02d", mm)).tag(mm)
                                             .font(.system(size: 30))
+                                            .foregroundColor(Color.customText)
+                                        
             
                                     }
                                 }
                                 .pickerStyle(.wheel)
-                                .colorScheme(.light)
+//                                .colorScheme(.light)
                             }
             
             
                         }
+            .padding(.top,24)
 
             ScrollView {
                 if groups.isEmpty && !isLoading {
-                    Text("예약된 알림이 없습니다.").foregroundColor(.secondary)
+                    Text(lang ? "예약된 알림이 없습니다." :"No notifications scheduled.").foregroundColor(.secondary)
                 }
                 ForEach(groups.filter{$0.hasRepeats}) { g in
                     HStack {
                         Text(String(format: "%02d:%02d", g.hour, g.minute))
                             .font(.system(size: 30))
                         Spacer()
-                        if g.hasRepeats { Chip("반복") }
-                        Text("\(g.count)일") // ← 동일 시각의 '미반복' 예약 개수(=일수)
+                        if g.hasRepeats { Chip(lang ? "반복" : "Repeat") }
+                        Text(lang ? "\(g.count)일": "\(g.count)Days") // ← 동일 시각의 '미반복' 예약 개수(=일수)
                             .font(.caption)
                             .foregroundColor(.secondary)
 
@@ -244,7 +375,7 @@ struct TimePicker: View {
 //                        .buttonStyle(.borderless))
 
                         Menu {
-                            Button("이 시각의 예약 모두 삭제", role: .destructive) {
+                            Button(lang ? "이 시각의 예약 모두 삭제" : "Remove all reminders for this time", role: .destructive) {
                                 removeAll(in: g)
                             }
                         } label: {
@@ -267,6 +398,8 @@ struct TimePicker: View {
             .padding(.bottom,24)
         }
         .background(Color.customBackground)
+        .modifier(GlassEffectSheetModifier())
+  
     }
 
     // MARK: - 그룹 모델 & 로직
@@ -412,9 +545,13 @@ struct QtListCellView: View {
         VStack{
             Text(item?.title ?? "")
                 .font(Font.bold15)
-               
+                .padding(.bottom,8)
             Text(item?.address ?? "")
                 .font(Font.reg12)
+                .padding(.bottom,2)
+            Text(item?.date ?? Date(), style: .date)
+                .font(Font.reg12)
+            
         }
         .frame(maxWidth:.infinity)
         .padding()
@@ -435,9 +572,9 @@ struct PlusBtnView: View {
         }) {
             ZStack{
                 Circle()
-                    .fill(Color.customText)
+//                    .fill(Color.customText)
                     .frame(width:70)
-                    .shadow(radius: 10)
+//                    .shadow(radius: 10)
                 
                 Image(systemName: "plus")
                     .font(Font.black30)
@@ -445,10 +582,23 @@ struct PlusBtnView: View {
                     
             }
         }
-        
+        .modifier(GlassEffectBtnModifier())
     }
 }
 
+ // MARK: - LoadingView
+struct LoadingDemoView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+//            ProgressView() // 기본 원형 스피너
+//                .progressViewStyle(.circular) // 생략해도 기본은 circular
+//                .tint(.blue)                  // 색상
+
+            ProgressView("Loading...")        // 라벨 포함
+        }
+        .padding()
+    }
+}
 
 
 #Preview {

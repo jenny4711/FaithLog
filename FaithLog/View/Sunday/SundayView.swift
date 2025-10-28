@@ -62,8 +62,9 @@ struct SundayView: View {
                                         context.delete(item)
                                     }) {
                                         Image(systemName: "trash")
+                                            
                                     }
-                                    .tint(Color.customBackground)
+                                    .tint(Color.red)
                                     
                                 }
                                 

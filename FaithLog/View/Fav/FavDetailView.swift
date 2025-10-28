@@ -30,7 +30,8 @@ struct FavDetailView: View {
     @State private var secondsLeft: Int = 20
     @State private var typing: String = ""
     @State private var wrongTry: Bool = false
-    
+    @State private var showUp:Bool = false
+    @State private var showPhase:Bool = false
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     private var target: String {
@@ -96,6 +97,8 @@ struct FavDetailView: View {
                                     .cornerRadius(12)
                             }
                             .frame(maxWidth:640,minHeight: 150)
+                            .offset(y: showPhase ? 0 : -55)
+                            .opacity(showPhase ? 1 : 0)
                             .padding()
                             
                             
@@ -104,7 +107,11 @@ struct FavDetailView: View {
                                     .foregroundColor(.secondary)
                                 Spacer()
                                 Button("외우기") {
-                            withAnimation { phase = .typing }
+                                    withAnimation {
+                                        phase = .typing
+                                        
+                                        
+                                    }
                                                 }
                                 .buttonStyle(.bordered)
                             }//:HSTACK(BTN)
@@ -112,6 +119,12 @@ struct FavDetailView: View {
                             
 
                           
+                        }
+                        .onAppear{
+                            withAnimation{
+                                showUp = false
+                                showPhase = true
+                            }
                         }
                         
                     case .typing:
@@ -135,6 +148,9 @@ struct FavDetailView: View {
                                     .stroke(wrongTry ? Color.red : Color.clear, lineWidth: 1)
                                     .fill(Color.white)
                             )
+                            .animation(.easeInOut(duration: 1),value:showUp)
+                            .offset(x: showUp ? 0 : 250)
+                            
                                                     
                                                     HStack {
                                                         Button("확인") { checkAnswer() }
@@ -146,51 +162,38 @@ struct FavDetailView: View {
                                                         Button("초기화") {
                                                             typing = ""
                                                             wrongTry = false
+                                                            
                                                         }
                                                         .buttonStyle(.bordered)
                                                         
                                                         Button("다시 보기(20초)") {
                                                                 secondsLeft = 20
-                                                                withAnimation { phase = .showing }
+                                                            withAnimation {
+                                                                phase = .showing
+                                                              
+                                                               
+                                                            }
                                                                         }
                                                             .buttonStyle(.bordered)
                                                     }//:HSTACk(btns)
                                                     .padding(.horizontal,16)
+                                                    .padding(.top,16)
                                                     
 
                                                     
                                                 }//:VSTACK
                                                 .padding(.horizontal,16)
-                        
+                                                .onAppear{
+                                                    withAnimation{
+                                                        showUp = true
+                                                        showPhase = false
+                                                    }
+                                                }
+                                                
+                                                
                         
                     case .done:
                         FavDoneView(fav: fav, parts: parts)
-//                        VStack{
-//                            
-//                            Text("완료! 모든 문단을 맞췄어요 🎉")
-//                                .font(.headline)
-//                                .foregroundColor(.green)
-//                                .padding(.bottom,50)
-//                            HStack{
-//                                Text(fav.title)
-//                                Text("\(fav.chapter)장 \(fav.verse)절")
-//                            }
-//                            
-//                            
-//                            VStack{
-//                               
-//                                ForEach(parts,id:\.self){
-//                                    item in
-//                                    Text("\(item)")
-//                                }
-//                                Spacer()
-//                            }
-//                           
-//                            
-//                        }
-                        
-                        
-                        
                         
                     case .empty:
                         EmptyView()

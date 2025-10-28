@@ -97,46 +97,61 @@ struct QtFormView: View {
                 
                 
                 ScrollView{
-                    Button(action: {
-                        openBibleForm = true
-                    }) {
-                        Rectangle()
-                            .frame(height:50)
-                            .tint(Color.colorText)
-                            .cornerRadius(5)
-                            .overlay {
-                                Text(lang ? "성경보기" : "Find Bible")
-                                    .foregroundColor(Color.colorBackground)
-                            }
-                    }//:BUTTON
-                    .padding(.vertical,10)
-                    
+                    if #available(iOS 26.0, *) {
+                        Button(action: {
+                            openBibleForm = true
+                        }) {
+                            Rectangle()
+                                .frame(height:40)
+                                .tint(Color.clear)
+                                .cornerRadius(5)
+                                .overlay {
+                                    Text(lang ? "성경보기" : "Find Bible")
+                                        .foregroundColor(Color.customText)
+                                        .fontWeight(.bold)
+                                }
+                        }//:BUTTON
+                        .padding(.vertical,10)
+                        .glassEffect()
+                    } else {
+                        Button(action: {
+                            openBibleForm = true
+                        }) {
+                            Rectangle()
+                                .frame(height:50)
+                                .tint(Color.colorText)
+                                .cornerRadius(5)
+                                .overlay {
+                                    Text(lang ? "성경보기" : "Find Bible")
+                                        .foregroundColor(Color.colorBackground)
+                                }
+                        }//:BUTTON
+                        .padding(.vertical,10)
+                    }
                     
                     // MARK: - 타이틀(title)
                     
                     
                     VStack(alignment:.leading) {
-                        Text("Title")
-                            
+                        Text(lang ? "제목":"Title")
+//                            .padding(.leading,16)
+                            .padding(.top,10)
                             .font(Font.bold15)
                             .foregroundColor(Color.colorText)
+                       
                         HStack {
                             TextField("",text:$title,axis:.vertical)
-                                .frame(height:60)
-                                .lineLimit(1...3)
-                                .textFieldStyle(PlainTextFieldStyle())
-//                                .background(Color.colorText)
-                                .foregroundColor(Color.customBackground)
-                        
-                                .padding(.leading,16)
-                                
+                                .modifier(GlassEffectTextFieldModifier())
                         }
-                        .background(Color.customText)
-                        .cornerRadius(10)
+                                
+                        .modifier(GlassEffectHStackModifier())
+                     
+
+                        
                        
                     }//:VStack(title)
                     
-
+         
                     
                     
                     
@@ -160,15 +175,18 @@ struct QtFormView: View {
                     if paths == "medit"{
                         // MARK: - 묵상하기(medit)
                         QtTextFieldView(item: $medit, title:lang ? "묵상": "Meditation" )
+                            .padding(.top,10)
                     }
                     if paths == "appl"{
                         // MARK: - 적용(appl)
                         QtTextFieldView(item: $application, title:lang ? "적용" : "Application")
+                            .padding(.top,10)
                     }
                     if paths == "pray"{
                         
                           // MARK: - 기도(pray)
-                          QtTextFieldView(item: $pray, title: "기도")
+                        QtTextFieldView(item: $pray, title:lang ? "기도" : "Pray")
+                            .padding(.top,10)
                     }
                   
 
@@ -186,29 +204,42 @@ struct QtFormView: View {
                                 paths = "medit"
                             }
                         }) {
-                            Circle()
-                                .frame(width:70)
-                                .tint(Color.customText)
-                                .overlay{
+                   
+
+                              
+                                    ZStack{
+                                      
+                                            
+                                        Circle()
+                                            .frame(width: 70,height:70)
+                                            .shadow(color:Color(Color.customTBlack),radius: 0,x:0,y:3)
+                                        
+                                         
+                                    
                                     VStack {
                                         if lang {
                                             Text(
                                                 paths == "medit" ? "적용" :(paths == "appl" ? "기도" :  "묵상")
                                             )
-                                        }else{
+                                      }else{
                                            EmptyView()
                                         }
                                         
                                        
                                         Text(lang ? "작성하기" : "Next")
-                                    }
-                                    .font(Font.bold15)
-                                    .foregroundColor(Color.customBackground)
+                                    }//:VSTACK
+                                        
+                                    .modifier(GlassEffectTextColorModifier())
                                     
-                                }
+                                    }//:ZSTACK
+                            
+
                             
                             
-                        }
+                        }//:next Button
+                        .modifier(GlassEffectBtnModifier())
+                      
+                         
                       
                     }
                     

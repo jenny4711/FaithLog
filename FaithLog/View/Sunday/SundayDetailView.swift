@@ -47,6 +47,7 @@ struct SundayDetailView: View {
                             }
                         }) {
                             Text("Save")
+                                .foregroundColor(Color.customText)
                         }
                     }else{
                         Button(action: {
@@ -78,7 +79,7 @@ struct SundayDetailView: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(maxWidth:.infinity)
-                                .frame(height:isEdit ? 300 :500)
+                                .frame(height:isEdit ? 300 :350)
                                 .clipped()
                                 .cornerRadius(20)
                                 .padding(.horizontal,20)

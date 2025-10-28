@@ -31,6 +31,7 @@ class DataService {
     var lang:Bool?
     var ch:Int?
     var enTitle:String?
+    var recomQt:String = ""
     
     private let bibleURL = "https://bibleapi-fr2x.onrender.com/nb"
     
@@ -183,6 +184,10 @@ func saveFavVerse(_ verse:String){
     }
     
     
+   
+    
+    
+    
     
     func performRequest(with urlString: String) async {
         guard let url = URL(string: urlString) else {
@@ -308,7 +313,7 @@ func saveFavVerse(_ verse:String){
     }
 
     
-
+ // MARK: - bible summary(parseJSONresp)
     
     func parseJSONresp(_ data: Data) -> String? {
         let decoder = JSONDecoder()
@@ -332,4 +337,80 @@ func saveFavVerse(_ verse:String){
     }
     
     
+    
+    
+     // MARK: - get QT from Ai
+    
+    func getEmotionQt(_ emotion:String,lang:Bool,content:String) async{
+        print("emotion \(emotion)")
+        // lang Bool -> backend expected: "ko" or "en"
+        let normLang = lang ? "ko" : "en"
+        // Safely encode each path segment (avoid breaking on slashes)
+        func encodePath(_ s: String) -> String {
+            var allowed = CharacterSet.urlPathAllowed
+            allowed.remove(charactersIn: "/")
+            return s.addingPercentEncoding(withAllowedCharacters: allowed) ?? s
+        }
+        
+        let base = "https://bibleapi-fr2x.onrender.com/nb/ai/getAiRespEmotion"
+        let emotionPart = encodePath(emotion)
+        let contextPart = encodePath(content)
+        let urlString = "\(base)/\(emotionPart)/\(contextPart)/\(normLang)"
+        
+        guard let url = URL(string: urlString) else {
+            await MainActor.run { self.errorMsg = "Invalid URL: \(urlString)" }
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 20
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let http = response as? HTTPURLResponse else {
+                await MainActor.run { self.errorMsg = "No HTTPURLResponse" }
+                return
+            }
+            
+            let body = String(data: data, encoding: .utf8) ?? "<non-utf8 body>"
+            
+            guard (200...299).contains(http.statusCode) else {
+                await MainActor.run { self.errorMsg = "HTTP \(http.statusCode): \(body)" }
+                return
+            }
+            
+            struct EmotionResponse: Decodable { let resp: String }
+            do {
+                let decoded = try JSONDecoder().decode(EmotionResponse.self, from: data)
+                await MainActor.run {
+                    self.recomQt = decoded.resp
+                    self.errorMsg = nil
+                }
+            } catch {
+                // Fallback to raw body if shape differs
+                await MainActor.run {
+                    self.recomQt = body
+                    self.errorMsg = "Decode fallback (check JSON shape)."
+                }
+                print("⚠️ Decode failed, fell back to raw body. error:", error)
+            }
+        } catch {
+            await MainActor.run { self.errorMsg = "Network/Decode error: \(error.localizedDescription)" }
+            print("❌ Network/Decode error:", error)
+        }
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
+

@@ -8,12 +8,43 @@
 
 /* Begin PBXBuildFile section */
 		15383E43107C915680667D05 /* Pods_FaithLog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFC9180791DB808CEAF28F /* Pods_FaithLog.framework */; };
+		A5D992642EABF820001F2210 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5D992632EABF820001F2210 /* WidgetKit.framework */; };
+		A5D992662EABF820001F2210 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5D992652EABF820001F2210 /* SwiftUI.framework */; };
+		A5D992772EABF823001F2210 /* FaithLogWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A5D992622EABF820001F2210 /* FaithLogWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A5D992752EABF823001F2210 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A5DF0CD62E39E19300A83DE8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A5D992612EABF820001F2210;
+			remoteInfo = FaithLogWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A5D992782EABF823001F2210 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A5D992772EABF823001F2210 /* FaithLogWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		04B06E9048754E592D648C33 /* Pods-FaithLog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaithLog.release.xcconfig"; path = "Target Support Files/Pods-FaithLog/Pods-FaithLog.release.xcconfig"; sourceTree = "<group>"; };
 		0C450E4702E1A922600CC9A8 /* Pods-FaithLog.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaithLog.debug.xcconfig"; path = "Target Support Files/Pods-FaithLog/Pods-FaithLog.debug.xcconfig"; sourceTree = "<group>"; };
 		10FFC9180791DB808CEAF28F /* Pods_FaithLog.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FaithLog.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5D992622EABF820001F2210 /* FaithLogWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FaithLogWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5D992632EABF820001F2210 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A5D992652EABF820001F2210 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		A5D992812EAC0152001F2210 /* FaithLogWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FaithLogWidgetExtension.entitlements; sourceTree = "<group>"; };
 		A5DF0CDE2E39E19300A83DE8 /* FaithLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaithLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -25,9 +56,39 @@
 			);
 			target = A5DF0CDD2E39E19300A83DE8 /* FaithLog */;
 		};
+		A5D9927C2EABF823001F2210 /* Exceptions for "FaithLogWidget" folder in "FaithLogWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A5D992612EABF820001F2210 /* FaithLogWidgetExtension */;
+		};
+		A5D992852EAC09E1001F2210 /* Exceptions for "Shared" folder in "FaithLogWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SharedVersedStore.swift,
+			);
+			target = A5D992612EABF820001F2210 /* FaithLogWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A5D992672EABF820001F2210 /* FaithLogWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A5D9927C2EABF823001F2210 /* Exceptions for "FaithLogWidget" folder in "FaithLogWidgetExtension" target */,
+			);
+			path = FaithLogWidget;
+			sourceTree = "<group>";
+		};
+		A5D9927D2EABFF12001F2210 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A5D992852EAC09E1001F2210 /* Exceptions for "Shared" folder in "FaithLogWidgetExtension" target */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		A5DF0CE02E39E19300A83DE8 /* FaithLog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -39,6 +100,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A5D9925F2EABF820001F2210 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5D992662EABF820001F2210 /* SwiftUI.framework in Frameworks */,
+				A5D992642EABF820001F2210 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A5DF0CDB2E39E19300A83DE8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -54,6 +124,8 @@
 			isa = PBXGroup;
 			children = (
 				10FFC9180791DB808CEAF28F /* Pods_FaithLog.framework */,
+				A5D992632EABF820001F2210 /* WidgetKit.framework */,
+				A5D992652EABF820001F2210 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -61,7 +133,10 @@
 		A5DF0CD52E39E19300A83DE8 = {
 			isa = PBXGroup;
 			children = (
+				A5D992812EAC0152001F2210 /* FaithLogWidgetExtension.entitlements */,
+				A5D9927D2EABFF12001F2210 /* Shared */,
 				A5DF0CE02E39E19300A83DE8 /* FaithLog */,
+				A5D992672EABF820001F2210 /* FaithLogWidget */,
 				A5DF0CDF2E39E19300A83DE8 /* Products */,
 				B4D54D6F5E2C6F00D371E0AC /* Pods */,
 				486D5CF406E5F0E57377823F /* Frameworks */,
@@ -72,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				A5DF0CDE2E39E19300A83DE8 /* FaithLog.app */,
+				A5D992622EABF820001F2210 /* FaithLogWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -88,6 +164,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A5D992612EABF820001F2210 /* FaithLogWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A5D9927B2EABF823001F2210 /* Build configuration list for PBXNativeTarget "FaithLogWidgetExtension" */;
+			buildPhases = (
+				A5D9925E2EABF820001F2210 /* Sources */,
+				A5D9925F2EABF820001F2210 /* Frameworks */,
+				A5D992602EABF820001F2210 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A5D992672EABF820001F2210 /* FaithLogWidget */,
+			);
+			name = FaithLogWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = FaithLogWidgetExtension;
+			productReference = A5D992622EABF820001F2210 /* FaithLogWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		A5DF0CDD2E39E19300A83DE8 /* FaithLog */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A5DF0CE92E39E19500A83DE8 /* Build configuration list for PBXNativeTarget "FaithLog" */;
@@ -97,12 +195,15 @@
 				A5DF0CDB2E39E19300A83DE8 /* Frameworks */,
 				A5DF0CDC2E39E19300A83DE8 /* Resources */,
 				DA790C877EDDBA7EF06282E6 /* [CP] Embed Pods Frameworks */,
+				A5D992782EABF823001F2210 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A5D992762EABF823001F2210 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				A5D9927D2EABFF12001F2210 /* Shared */,
 				A5DF0CE02E39E19300A83DE8 /* FaithLog */,
 			);
 			name = FaithLog;
@@ -117,9 +218,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
+					A5D992612EABF820001F2210 = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
 					A5DF0CDD2E39E19300A83DE8 = {
 						CreatedOnToolsVersion = 16.4;
 					};
@@ -140,11 +244,19 @@
 			projectRoot = "";
 			targets = (
 				A5DF0CDD2E39E19300A83DE8 /* FaithLog */,
+				A5D992612EABF820001F2210 /* FaithLogWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A5D992602EABF820001F2210 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A5DF0CDC2E39E19300A83DE8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -201,6 +313,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A5D9925E2EABF820001F2210 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A5DF0CDA2E39E19300A83DE8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -210,7 +329,81 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A5D992762EABF823001F2210 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A5D992612EABF820001F2210 /* FaithLogWidgetExtension */;
+			targetProxy = A5D992752EABF823001F2210 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A5D992792EABF823001F2210 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FaithLogWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = PC2DQ73FYH;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FaithLogWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FaithLogWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.03;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jjenny4711.FaithLog.FaithLogWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A5D9927A2EABF823001F2210 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = FaithLogWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = PC2DQ73FYH;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FaithLogWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FaithLogWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.03;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jjenny4711.FaithLog.FaithLogWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		A5DF0CE72E39E19500A83DE8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -340,7 +533,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FaithLog/FaithLog.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = PC2DQ73FYH;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -354,7 +547,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.03;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jjenny4711.FaithLog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -373,7 +566,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FaithLog/FaithLog.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = PC2DQ73FYH;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -387,7 +580,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.01;
+				MARKETING_VERSION = 1.03;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jjenny4711.FaithLog;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -401,6 +594,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A5D9927B2EABF823001F2210 /* Build configuration list for PBXNativeTarget "FaithLogWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A5D992792EABF823001F2210 /* Debug */,
+				A5D9927A2EABF823001F2210 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A5DF0CD92E39E19300A83DE8 /* Build configuration list for PBXProject "FaithLog" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

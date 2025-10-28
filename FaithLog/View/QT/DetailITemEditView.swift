@@ -23,6 +23,8 @@ struct DetailITemEditView: View {
             .padding(.bottom, 10)
             if title == "제목"{
                 TextField("",text: $editField,axis:.vertical)
+//                modifier(GlassEffectTextFieldModifier())
+//                .cornerRadius(50)
                     .frame(height:40)
                     .lineLimit(1...3)
                     .textFieldStyle(PlainTextFieldStyle())
@@ -32,16 +34,17 @@ struct DetailITemEditView: View {
                     .padding(.horizontal,16)
                 
             }else{
+//                QtTextFieldView(item: $editField)
                 TextEditor(text: $editField)
-                    .frame(minHeight: 150, maxHeight: 500)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .scrollContentBackground(.hidden)
-                    .font(Font.reg18)
-//                    .accentColor(Color.customText)
-                    .foregroundColor(Color.customBackground)
-                    .background(Color.customText)
-                    .cornerRadius(8)
+                    .modifier(GlassEffectTextEditerModifier2())
+//                    .frame(minHeight: 150, maxHeight: 500)
+//                    .padding(.horizontal, 12)
+//                    .padding(.vertical, 8)
+//                    .scrollContentBackground(.hidden)
+//                    .font(Font.reg18)
+//                    .foregroundColor(Color.customBackground)
+//                    .background(Color.customText)
+//                    .cornerRadius(8)
             }
            
             
@@ -53,7 +56,7 @@ struct DetailITemEditView: View {
             print("DetailITemEditView appeared with item: \(item)")
             print("editField set to: \(editField)")
         }
-        .padding(.trailing, 20)
+        .padding(.horizontal, 20)
     }
 }
 

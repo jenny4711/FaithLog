@@ -9,6 +9,7 @@
 
 import Foundation
 import UserNotifications
+import WidgetKit
 
 // MARK: - Models
 
@@ -26,8 +27,8 @@ public struct ScheduledAlarm: Identifiable {
     public let minute: Int?
     public let repeats: Bool
     let year: Int?
-        let month: Int?
-        let day: Int?
+    let month: Int?
+    let day: Int?
 }
 
 
@@ -45,7 +46,10 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     func configure() {
         let center = UNUserNotificationCenter.current()
         center.delegate = self
-        center.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
+        center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if let error { print("Notification authorization request error: \(error)") }
+            print("Notification authorization granted? \(granted)")
+        }
 
         // 배너 액션: 열기 / 6시간 뒤 다시 / 완료
         let open   = UNNotificationAction(identifier: "OPEN_APP",
@@ -70,6 +74,7 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // 포그라운드에서도 배너/사운드 표시
         completionHandler([.banner, .sound, .badge])
     }
 
@@ -99,7 +104,6 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
 extension NotificationManager {
 
- 
     func scheduleReminder(style: ReminderStyle,
                           startHour: Int,
                           startMinute: Int,
@@ -109,7 +113,6 @@ extension NotificationManager {
             scheduleDaily(hour: startHour, minute: startMinute)
 
         case .threeTimes6h:
-       
             let days = min(21, items.count)
             guard days > 0 else { return }
             scheduleDaily3x6h_RotatingDays(startHour: startHour,
@@ -119,26 +122,28 @@ extension NotificationManager {
         }
     }
 
-  
     func scheduleDaily(hour: Int,
                        minute: Int,
                        title: String = "묵상 시간",
                        body: String  = "묵상 하실 시간입니다.") {
         guard (0...23).contains(hour), (0...59).contains(minute) else { return }
 
-        let note = UNMutableNotificationContent()
-        note.title = title
-        note.body  = body
-        note.sound = .default
+        ensureAuthorizedThen {
+            let note = UNMutableNotificationContent()
+            note.title = title
+            note.body  = body
+            note.sound = .default
 
-        var dc = DateComponents(); dc.hour = hour; dc.minute = minute
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dc, repeats: true)
+            var dc = DateComponents(); dc.hour = hour; dc.minute = minute
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dc, repeats: true)
 
-        let id = String(format: "daily-%02d:%02d", hour, minute)
-        let req = UNNotificationRequest(identifier: id, content: note, trigger: trigger)
-        UNUserNotificationCenter.current().add(req)
+            let id = String(format: "daily-%02d:%02d", hour, minute)
+            let req = UNNotificationRequest(identifier: id, content: note, trigger: trigger)
+            UNUserNotificationCenter.current().add(req) { err in
+                if let err { print("scheduleDaily add error: \(err)") }
+            }
+        }
     }
-
 
     func scheduleDaily3x6h_RotatingDays(startHour: Int,
                                         startMinute: Int,
@@ -146,44 +151,54 @@ extension NotificationManager {
                                         dayItems: [VerseItem]) {
         guard (0...23).contains(startHour), (0...59).contains(startMinute) else { return }
 
-        let maxDays = min(days, 21) // 21일 * 3회 = 63개 (64 제한 보호)
-        let starts = dailyStartSlots(startHour: startHour,
-                                     startMinute: startMinute,
-                                     days: maxDays)
-        let dayCount = min(starts.count, dayItems.count)
+        ensureAuthorizedThen {
+            let maxDays = min(days, 21) // 21일 * 3회 = 63개 (64 제한 보호)
+            let starts = self.dailyStartSlots(startHour: startHour,
+                                         startMinute: startMinute,
+                                         days: maxDays)
+            let dayCount = min(starts.count, dayItems.count)
 
-        let center = UNUserNotificationCenter.current()
-        let prefix = "verse3x6-"
-        let cal = Calendar.current
-        let now = Date()
+            let center = UNUserNotificationCenter.current()
+            let prefix = "verse3x6-"
+            let cal = Calendar.current
+            let now = Date()
 
-        removePending(withPrefix: prefix) { // 이전 같은 접두어 예약 정리
-            for i in 0..<dayCount {
-                let item = dayItems[i]
-                let base = starts[i] // 해당 날짜의 첫 회차(시작시각)
+            self.removePending(withPrefix: prefix) { // 이전 같은 접두어 예약 정리
+                for i in 0..<dayCount {
+                    let item = dayItems[i]
+                    let base = starts[i] // 해당 날짜의 첫 회차(시작시각)
 
-                // 0h, +6h, +12h → 하루 3회(같은 구절)
-                for (slotIdx, offsetH) in [0, 6, 12].enumerated() {
-                    guard let fire = cal.date(byAdding: .hour, value: offsetH, to: base),
-                          fire > now else { continue }
+                    // 0h, +6h, +12h → 하루 3회(같은 구절)
+                    for (slotIdx, offsetH) in [0, 6, 12].enumerated() {
+                        guard let fire = cal.date(byAdding: .hour, value: offsetH, to: base),
+                              fire > now else { continue }
 
-                    let comp = cal.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
+                        let comp = cal.dateComponents([.year, .month, .day, .hour, .minute], from: fire)
 
-                    let note = UNMutableNotificationContent()
-                    note.title = item.title
-                    note.body  = item.body
-                    note.sound = .default
-                    note.categoryIdentifier = "VERSE_CATEGORY"
+                        let note = UNMutableNotificationContent()
+                        note.title = item.title
+                        note.body  = item.body
+                        note.sound = .default
+                        note.categoryIdentifier = "VERSE_CATEGORY"
 
-                    // 고유 ID: verse3x6-YYYYMMDD-HHmm-#1..3
-                    let y = comp.year ?? 0, m = comp.month ?? 0, d = comp.day ?? 0
-                    let hh = comp.hour ?? 0, mm = comp.minute ?? 0
-                    let id = String(format: "\(prefix)%04d%02d%02d-%02d%02d-#%d",
-                                    y, m, d, hh, mm, slotIdx + 1)
+                        // 고유 ID: verse3x6-YYYYMMDD-HHmm-#1..3
+                        let y = comp.year ?? 0, m = comp.month ?? 0, d = comp.day ?? 0
+                        let hh = comp.hour ?? 0, mm = comp.minute ?? 0
+                        let id = String(format: "\(prefix)%04d%02d%02d-%02d%02d-#%d",
+                                        y, m, d, hh, mm, slotIdx + 1)
 
-                    let trigger = UNCalendarNotificationTrigger(dateMatching: comp, repeats: false)
-                    let req = UNNotificationRequest(identifier: id, content: note, trigger: trigger)
-                    center.add(req)
+                        let trigger = UNCalendarNotificationTrigger(dateMatching: comp, repeats: false)
+                        let req = UNNotificationRequest(identifier: id, content: note, trigger: trigger)
+                        center.add(req) { err in
+                            if let err { print("add error (\(id)): \(err)") }
+                        }
+
+                        // ⬇️ 위젯이 읽을 다음 번 말씀/시간 저장
+                        SharedVerseStore.saveNext(verse: "\(item.title)-\(item.body)", fireDate: fire)
+
+                        // 가능하면 즉시 타임라인 리로드(보장되진 않지만 도움이 됨)
+                        WidgetCenter.shared.reloadTimelines(ofKind: "FaithLogWidget")
+                    }
                 }
             }
         }
@@ -191,32 +206,31 @@ extension NotificationManager {
 
     // 목록/취소 유틸 (선택)
     func getPending(completion: @escaping ([ScheduledAlarm]) -> Void) {
-            UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-                let alarms: [ScheduledAlarm] = requests.compactMap { req in
-                    guard let trig = req.trigger as? UNCalendarNotificationTrigger else { return nil }
-                    let dc = trig.dateComponents
-                    return ScheduledAlarm(
-                        id: req.identifier,
-                        title: req.content.title,
-                        hour: dc.hour,
-                        minute: dc.minute,
-                        repeats: trig.repeats,
-                        year: dc.year,
-                        month: dc.month,
-                        day: dc.day
-                    )
-                }
-                // "가까운 날짜" 기준 정렬 (반복은 날짜 없음 → 뒤로)
-                let sorted = alarms.sorted { a, b in
-                    let ka = (a.year ?? 9999, a.month ?? 99, a.day ?? 99, a.hour ?? 99, a.minute ?? 99)
-                    let kb = (b.year ?? 9999, b.month ?? 99, b.day ?? 99, b.hour ?? 99, b.minute ?? 99)
-                    return ka < kb
-                }
-                DispatchQueue.main.async { completion(sorted) }
+        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+            let alarms: [ScheduledAlarm] = requests.compactMap { req in
+                guard let trig = req.trigger as? UNCalendarNotificationTrigger else { return nil }
+                let dc = trig.dateComponents
+                return ScheduledAlarm(
+                    id: req.identifier,
+                    title: req.content.title,
+                    hour: dc.hour,
+                    minute: dc.minute,
+                    repeats: trig.repeats,
+                    year: dc.year,
+                    month: dc.month,
+                    day: dc.day
+                )
             }
+            // "가까운 날짜" 기준 정렬 (반복은 날짜 없음 → 뒤로)
+            let sorted = alarms.sorted { a, b in
+                let ka = (a.year ?? 9999, a.month ?? 99, a.day ?? 99, a.hour ?? 99, a.minute ?? 99)
+                let kb = (b.year ?? 9999, b.month ?? 99, b.day ?? 99, b.hour ?? 99, b.minute ?? 99)
+                return ka < kb
+            }
+            DispatchQueue.main.async { completion(sorted) }
         }
-    
-    
+    }
+
     func cancel(id: String) {
         UNUserNotificationCenter.current()
             .removePendingNotificationRequests(withIdentifiers: [id])
@@ -234,6 +248,27 @@ extension NotificationManager {
 // MARK: - Private helpers
 
 private extension NotificationManager {
+    /// 권한 상태를 확인하고, 없으면 요청한 뒤 작업 실행
+    func ensureAuthorizedThen(_ work: @escaping () -> Void) {
+        let center = UNUserNotificationCenter.current()
+        center.getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized, .provisional, .ephemeral:
+                work()
+            case .denied:
+                print("Notifications denied in Settings.")
+            case .notDetermined:
+                center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+                    if let error { print("requestAuthorization error: \(error)") }
+                    if granted { work() }
+                    else { print("User did not grant notifications.") }
+                }
+            @unknown default:
+                work()
+            }
+        }
+    }
+
     /// 스누즈용 1회성 알림
     func scheduleOneOff(afterHours hours: Int,
                         title: String,
@@ -251,7 +286,9 @@ private extension NotificationManager {
         let req = UNNotificationRequest(identifier: "snooze-\(UUID().uuidString)",
                                         content: note,
                                         trigger: trigger)
-        UNUserNotificationCenter.current().add(req)
+        UNUserNotificationCenter.current().add(req) { err in
+            if let err { print("snooze add error: \(err)") }
+        }
     }
 
     /// 동일 접두어 예약 전부 제거
@@ -284,16 +321,3 @@ private extension NotificationManager {
         return (0..<days).compactMap { cal.date(byAdding: .day, value: $0, to: firstStart) }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

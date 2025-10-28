@@ -82,7 +82,7 @@ struct Onboarding: View {
                     .sheet(isPresented: $showBibleForm) {
                         BibleFormView()
                             .presentationDetents([.fraction(0.3)])
-                        
+                            
                     }
                     
                    
@@ -108,10 +108,12 @@ struct Onboarding: View {
                                 .tint(Color.customText)
                             Text(lang ? "US" : "KR")
                                 .font(Font.semi20)
-                                .foregroundColor(Color.customBackground)
-                            
+                                 .foregroundColor(Color.customBackground)
+                              
                         }
+                        
                     }//:Button
+                    .modifier(GlassEffectCircleBtnModifier())
                 }
                 .padding(.horizontal,16)
                

@@ -44,7 +44,7 @@ struct BibleResultView: View {
 
                         
                         
-                        Text("요약 내용")
+                        Text(lang ? "요약 내용" : "Summary")
                             .font(Font.semi20)
                             .padding(.leading,16)
                             .padding(.top,16)
@@ -59,12 +59,15 @@ struct BibleResultView: View {
                               
                         
                     }//:요약
+                    
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.customText)
                     .foregroundColor(Color.customBackground)
                     .cornerRadius(10)
+                    
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
+//                            .modifier(GlassEffectSheetModifier())
                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                     )
 
@@ -98,6 +101,11 @@ struct BibleResultEn: View {
     @Environment(DataService.self) var api
     @Environment(\.modelContext) private var context
     @Query private var favVerses: [FavVerse]
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 10) {
@@ -113,7 +121,7 @@ struct BibleResultEn: View {
 
                 VStack(alignment: .leading) {
                     HStack {
-                        Text("\(chapter)장 \(verseNumber)절")
+                        Text(lang ? "\(chapter)장 \(verseNumber)절" :  "\(title) \(chapter) : \(verseNumber)")
                             .font(Font.reg12)
                             .foregroundColor(isSelected ? Color.customBackground : Color.customOneText)
 
@@ -158,12 +166,15 @@ struct BibleResultEn: View {
                         .foregroundColor(isSelected ? Color.customBackground : Color.customOneText)
                         .cornerRadius(8)
                     }
+                    
                 }
+              
                 .background(
                     RoundedRectangle(cornerRadius: 20)
                         .fill(isSelected ? Color.customText : Color.white)
                 )
                 .padding(10)
+                
             }
             VStack(alignment:.center){
                 Text("Scripture quotations are taken from the Holy Bible, New Living Translation, copyright ©1996,")

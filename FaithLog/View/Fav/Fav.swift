@@ -15,6 +15,11 @@ struct Fav: View {
     @State private var setAlert:Bool = false
     @State private var hr = 9
     @State private var m  = 30
+    @AppStorage("seleLang") private var seleLang:String = "KR"
+
+    var lang: Bool {
+        seleLang == "KR"
+    }
     let colums = [
         GridItem(.flexible()),
         GridItem(.flexible()),
@@ -76,6 +81,7 @@ struct Fav: View {
                     
                     
                     .padding(.leading,16)
+                  
                     // MARK: - TITLE
                     VStack{
                         Button(action: {
@@ -87,6 +93,15 @@ struct Fav: View {
                         Text("Favorite List")
                             .font(Font.heavy25)
                             .foregroundColor(Color.customText)
+                        if lang{
+                            Text("힘들 때 떠오르는 한 구절이 큰 힘이 됩니다. 좋아하는 구절을 즐겨찾기에 담고, 하루에 한 번 마음에 새겨보세요.")
+                                .modifier(IntroTextModifier())
+                        }else{
+                            Text("A single verse can lift you when times are hard. Save your favorites and let one verse settle into your heart each day.")
+                                .modifier(IntroTextModifier())
+                        }
+                        
+                       
                         
                     }//:VSTACK(logo and title)
                     
@@ -124,7 +139,7 @@ struct Fav: View {
                             
                         }
                         
-                        
+                        .padding(.horizontal,24)
                         
                     }//:SCROLLview
                     
@@ -150,6 +165,7 @@ struct Fav: View {
                                     .foregroundColor(Color.customBackground)
                             }
                         }
+                        .modifier(GlassEffectBtnModifier())
                     }//:HSTACK(BTN)
                     
                     
@@ -192,6 +208,11 @@ struct Fav: View {
         @State private var groups: [TimeGroup] = []   // ★ 추가: 그룹 상태
         @State private var isLoading = false
         @Binding var setAlert:Bool
+        @AppStorage("seleLang") private var seleLang:String = "KR"
+
+        var lang: Bool {
+            seleLang == "KR"
+        }
         let pickRandomVerse: () -> FavVerse
         let favs: [FavVerse]
 
@@ -210,38 +231,60 @@ struct Fav: View {
                         reload()
                         setAlert = false
                     } label: {
-                        Text("DONE").foregroundColor(.black)
+                        Text(lang ? "저장" :"DONE")
+                            .font(Font.med20)
+                            .foregroundColor(Color.customText)
+                            .padding(.trailing,16)
+                        
                     }
                    
+
                     
-                  
-                    
-                    
-                    
-                    
-                    
-                }
+                }//:HSTACK
+                
+
                 .padding(.trailing, 16)
                 .padding(.top, 16)
 
-                Text(String(format: "시간: %02d:%02d", hr, m))
-                    .font(Font.med20)
-                    .padding(.top, 16)
+                HStack{
+                    Text(lang ?"선택된 시간:" : "Selected Time")
+                        .font(Font.reg18)
+                        .foregroundColor(Color.customText)
+                        .padding(.top, 16)
+                    Text(String(format: "%02d:%02d", hr, m))
+                        .font(Font.black36)
+                        .foregroundColor(Color.customText)
+                        .padding(.top, 16)
+                }
+                
+               // MARK: - Intro
+                if lang {
+                    Text("마음이 흔들릴 때, 미리 설정해 둔 말씀이 먼저 찾아옵니다. 좋아하는 구절로 알람을 맞춰 두면, 필요한 순간에 따뜻한 위로를 전해드려요..")
+                        .modifier(IntroTextModifier())
+                }else{
+                    Text("When your heart feels unsteady, the verse you scheduled will come to you first. Set an alarm with a favorite verse so encouragement arrives right when you need it.")
+                        .modifier(IntroTextModifier())
+                }
+               
 
                 HStack{
                                 VStack{
                                     Text("Hour")
                                         .font(Font.semi20)
+                                        .foregroundColor(Color.customText)
                                     HStack {
                                         Picker("Hr", selection: $hr) {
                                             ForEach(0..<24) { h in
                                                 Text(String(format: "%02d", h)).tag(h)
                                                     .font(.system(size: 30))
+                                                    .foregroundColor(Color.customText)
+
                 
                                             }
                                         }
                                         .pickerStyle(.wheel)
-                                        .colorScheme(.light)
+//                                        .colorScheme(.light)
+                                                                                            
                 
                                 }
                                 }
@@ -252,15 +295,17 @@ struct Fav: View {
                                 VStack{
                                     Text("Minutes")
                                         .font(Font.semi20)
+                                        .foregroundColor(Color.customText)
                                     Picker("Min", selection: $m) {
                                         ForEach(0..<60) { mm in
                                             Text(String(format: "%02d", mm)).tag(mm)
                                                 .font(.system(size: 30))
+                                                .foregroundColor(Color.customText)
                 
                                         }
                                     }
                                     .pickerStyle(.wheel)
-                                    .colorScheme(.light)
+//                                    .colorScheme(.light)
                                 }
                 
                 
@@ -268,15 +313,16 @@ struct Fav: View {
 
                 ScrollView {
                     if groups.isEmpty && !isLoading {
-                        Text("예약된 알림이 없습니다.").foregroundColor(.secondary)
+                        Text(lang ? "예약된 알림이 없습니다." :"No notifications scheduled.").foregroundColor(.secondary)
                     }
                     ForEach(groups.filter{!$0.hasRepeats}) { g in
                         HStack {
                             Text(String(format: "%02d:%02d", g.hour, g.minute))
                                 .font(.system(size: 30))
+                                .foregroundColor(Color.customText)
                             Spacer()
-                            if g.hasRepeats { Chip("반복") }
-                            Text("\(g.count)일") // ← 동일 시각의 '미반복' 예약 개수(=일수)
+                            if g.hasRepeats { Chip(lang ? "반복" : "Repeat") }
+                            Text(lang ? "\(g.count)일": "\(g.count)Days") // ← 동일 시각의 '미반복' 예약 개수(=일수)
                                 .font(.caption)
                                 .foregroundColor(.secondary)
 
@@ -291,7 +337,7 @@ struct Fav: View {
 //                            .buttonStyle(.borderless))
 
                             Menu {
-                                Button("이 시각의 예약 모두 삭제", role: .destructive) {
+                                Button(lang ? "이 시각의 예약 모두 삭제" : "Remove all reminders for this time", role: .destructive) {
                                     print("All remove")
                                     removeAll(in: g)
                                 }

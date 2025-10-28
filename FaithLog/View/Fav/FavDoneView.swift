@@ -12,15 +12,17 @@ struct FavDoneView: View {
     var parts:[String]
     var body: some View {
         VStack{
-            
+          
             Text("완료! 모든 문단을 맞췄어요 🎉")
                 .font(.headline)
                 .foregroundColor(.green)
-                .padding(.bottom,50)
+                .padding(.top,100)
+                .padding(.bottom,20)
             HStack{
                 Text(fav.title)
                 Text("\(fav.chapter)장 \(fav.verse)절")
             }
+           
             
             
             VStack{
@@ -29,11 +31,17 @@ struct FavDoneView: View {
                     item in
                     Text("\(item)")
                 }
-                Spacer()
+              
             }
            
-            
+            Spacer()
         }
+        .background(
+            Color.customBackground
+        )
+    
+      
+        
     }
 }
 
