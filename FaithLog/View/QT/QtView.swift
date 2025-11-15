@@ -181,7 +181,7 @@ struct QtView: View {
                     Spacer()
                     HStack {
                         Spacer()
-//                        PlusBtnView(openForm: $openForm)
+
                         HStack{
                             Spacer()
 
@@ -203,7 +203,7 @@ struct QtView: View {
 
                                     }
                                 }//:Button
-//                                .modifier(defaultGlassEffect())
+
                                 .modifier(GlassEffectBtnModifier())
                               
 
@@ -322,7 +322,7 @@ struct TimePicker: View {
                                         }
                                     }
                                     .pickerStyle(.wheel)
-//                                    .colorScheme(.light)
+
             
                             }
                             }

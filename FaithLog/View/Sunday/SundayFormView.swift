@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+
 struct SundayFormView: View {
     @State  var isEdit:Bool = true
     @State private var photosPickerItem: PhotosPickerItem?
